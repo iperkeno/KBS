@@ -5,7 +5,7 @@
 set ::kbs(help) {
 Usage: kbs.tcl ?options? command ?args?
 
-options (configuration variables are available with \[Get ..\]):
+options (configuration variables are available with [Get ..]):
   -pkgfile=?file?   contain used Package definitions
                     (default is empty and use only internal definitions)
   -builddir=?dir?   set used building directory containing all package
@@ -54,9 +54,10 @@ options (configuration variables are available with \[Get ..\]):
   -vq-dyn           add 'vq-dyn' to variable 'kit'
   -vq-gui           add 'vq-gui' to variable 'kit'
   -vq-bi            add 'vq-bi' to variable 'kit'
+  
   If no interpreter option is given '-vq' will be asumed.
 
-additional variables for use with \[Get ..\]):
+additional variables for use with [Get ..]:
   application       name of application including version number
   builddir          common build dir (can be set with -builddir=..)
   makedir           package specific dir under 'builddir'
@@ -82,17 +83,18 @@ command:
   make pkg ..       make package (in 'makedir')
   install pkg ..    install package (in 'builddir')
   test pkg ..       test package
-  clean pkg ..      remove make targets
+  clean pkg ..      remove make targeimprovedts
   distclean pkg ..  remove 'makedir'
+
 'pkg' is used for glob style matching against available packages
 (Beware, you need to hide the special meaning of * like foo\\*)
 
 Startup configuration:
-  Read files '\$(HOME)/.kbsrc' and './kbsrc'. Lines starting with '#' are
-  treated as comments and removed. All other lines are concatenated and
-  used as command line arguments.
-  Read environment variable 'KBSRC'. The contents of this variable is used
-  as command line arguments.
+  - Read files '$(HOME)/.kbsrc' and './kbsrc'. 
+    Lines starting with '#' are treated as comments and removed. 
+    All other lines are concatenated and used as command line arguments.
+  - Read environment variable 'KBSRC'. The contents of this variable is used
+    as command line arguments.
 
 The following external programs are needed:
   * C-compiler, C++ compiler for metakit based programs (see -CC=)
