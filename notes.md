@@ -48,7 +48,14 @@ TODO modificare basekit in mod da generare un basekit con upx e poi caricare le 
 TODO add in the kbs-config file the dependencies download; we can addd it in SOURCE case with `sudo apt-get install xxx-dev `
 
 
-# Tcl-Pkg
+
+## Documentation
+Doxigen does not support tcl anymore.
+TODO: doxygen: remove action related to doxigen
+TODO: doxygen: remove doxygen from help
+TODO: doxygen: substitute with a tcl script for generating a markdown documentation
+
+## Tcl-Pkg
 
 Sarnold offers ...
 
