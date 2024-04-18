@@ -1,0 +1,4 @@
+# Ignora le cartelle che contengono la parola "build" nel nome
+*build*
+
+*test*

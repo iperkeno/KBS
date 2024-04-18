@@ -1,0 +1,87 @@
+kbs -- kitgen build system (version 0.4.8 for tcl/tk 8.6.5)
+==========================
+
+The system can generate [Tclkit]  and [Tclkit Lite] executables and
+Tcl packages for different operating systems.
+Tested are Linux, SunOS and Windows.
+  [Tclkit]: http://www.equi4.com/tclkit/tclkitlite.html
+  [Tclkit Lite]: http://www.equi4.com/tclkit/tclkitlite.html
+Additional documentation can be found under <http://wiki.tcl.tk/18146>
+
+Sources are available from <http://sourceforge.net/projects/kbskit>
+-------
+   * kbs.tcl - single source file, all you need
+
+  Metakit tclkit interpreter, read/write of kitfiles, C++ libs necessary:
+   *kbsmk*cli* - shell application
+   *kbsmk*dyn* - tk dynamic loadable
+   *kbsmk*gui* - tk static inserted
+  Vlerq tclkit lite interpreter, readonly kitfiles:
+   *kbsvq*cli* - shell application
+   *kbsvq*dyn* - tk dynamic loadable
+   *kbsvq*gui* - tk static inserted
+  Batteries included interpreter:
+   *kbsvq*bi
+  with (8.5 and 8.6):
+    bwidget1.9.9 gridplus2.10 icons1.2 img1.4.3
+    memchan2.3 mentry3.7 nsf2.0.0 ral0.11.2 pdf4tcl0.8.2 rbc0.1 sqlite3.11.0
+    tablelist5.15 tcllib1.18 tclx8.4 tdom0.8.3 thread2.7.3 tkcon tkdnd2.8
+    tklib0.6 tkpath0.3.3 tktable2.10 treectrl2.4.1 trofs0.4.8 udp1.0.11
+    wcb3.5 xotcl1.6.8
+2014-12-  only 8.5:
+    itcl3.4 itk3.4 iwidgets4.0.2
+  only 8.6:
+    itcl4.0 itk4.0 iwidgets4.1
+
+Quick start
+-----------
+   * Build [Tclkit] executables:
+  ./kbs.tcl -r -mk install kbskit8.5
+   * Build [Tclkit Lite] executables:
+  ./kbs.tcl -r -vq install kbskit8.5
+   * Build user defined batteries included executables:
+  ./kbs.tcl -r -vqi-bi -bi=".." install kbskit8.6
+   * Build kit-file:
+  ./kbs.tcl -r install kbspkg8.6
+   * Show used configuration:
+  ./kbs.tcl config
+   * Start graphical user interface:
+  ./kbs.tcl gui
+   * Display options and online help:
+  ./kbs.tcl help
+
+Build requirements
+------------------
+
+The following external programs are needed:
+   * C-compiler, C++ compiler for metakit based programs
+   * make with handling of VPATH variables (gmake)
+   * wget, cvs, svn, bzip2, git, tar, gzip, unzip to get and extract sources
+
+To build under Windows you need the [msys] system and put the kbs-sources
+inside the msys tree (/home/..).
+  [msys]:   http://sourceforge.net/project/showfiles.php?group_id=10894
+
+License & support
+-----------------
+
+This work is under BSD license (see with './kbs.tcl license')
+
+The [Tclkit]-specific sources are license free, they just have a copyright.
+Hold the author(s) harmless and any lawful use is permitted.
+
+This does *not* apply to any of the sources of the other major Open Source
+Software used in Tclkit, which each have very liberal BSD/MIT-like licenses:
+  * Tcl/Tk, TclVFS, Thread, Vlerq, Zlib
+
+Used extensions have own licenses. Please see in the sources.
+
+Acknowledgements
+----------------
+
+This work is based on the [Kitgen] system (http://www.equi4.com/kitgen.html)
+and ideas and code about a kitgen build system by Jean-Claude Wippler.
+
+With thanks to John Ousterhout for creating Tcl/Tk, Matt Newman and Vince Darley
+for developing the virtual file system, and the members of the Tcl Core Team for
+diligently maintaining and taking forward the Tcl/Tk code base plus extensions.
