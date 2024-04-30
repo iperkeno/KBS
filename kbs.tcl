@@ -322,7 +322,7 @@ proc ::kbs::distclean {args} {
 
 ##	Contain internally used functions and variables.
 namespace eval ::kbs::config {
-  namespace export Run Get Patch Require Source Configure Make Install Clean Test
+  namespace export Run Get Patch PatchFile Require Source Configure Make Install Clean Test
 #-------------------------------------------------------------------------------
 
 ##	Internal variable containing top level script directory.
@@ -473,7 +473,7 @@ proc ::kbs::config::_init {used list} {
   array unset _ TK_*
 
   # create interpreter with commands
-  lappend used Run Get Patch
+  lappend used Run Get Patch PatchFile
   set interp [interp create]
   foreach myProc [namespace export] {
     if {$myProc in $used} {
@@ -732,31 +732,50 @@ proc ::kbs::config::Source- {type args} {
         }
       }
     } Git {
-      set myDir [file join $maindir sources $package]
-      if {![file exists $myDir]} {
-        puts "=== Source $type $package"
-	if {[catch {Run $_(exec-git) clone {*}$args $package} myMsg]} {
-	  file delete -force $myDir
-          if {$verbose} {puts $myMsg}
-        }
-      } else {
-        puts "=== Source update $type $package"
-        if {[catch {
-	  set myOldpwd [pwd]
-	  cd $package
-	  Run $_(exec-git) pull
-	  cd $myOldpwd
-	} myMsg]} {
-	  catch {cd $myOldpwd}
-	  puts "=== Source update failed $type $package (ignored)"
-	  #file delete -force $myDir
-          if {$verbose} {puts $myMsg}
-        }
-      }
+		set myDir [file join $maindir sources $package]
+		set args [lassign $args op]
+
+		if {$op == "clone"} {
+			if {[file exists $myDir]} {
+				set op pull 
+				set args {}
+			} else { 
+				puts "=== Source $type $package"
+				if {[catch {Run $_(exec-git) clone {*}$args $package} myMsg]} {
+					file delete -force $myDir
+					if {$verbose} {puts $myMsg}
+				}
+			}
+
+			# signal successful git clone 
+			set op {}
+			set args {}
+
+		}
+
+		if {$op ne {}} {
+			puts "=== Source update $type $package git $op {*}$args"
+			if {[catch {
+				set myOldpwd [pwd]
+				cd $package
+				Run $_(exec-git) $op {*}$args
+				cd $myOldpwd
+			} myMsg]} {
+				catch {cd $myOldpwd}
+				puts "=== Source update failed $type $package (ignored)"
+				#file delete -force $myDir
+				if {$verbose} {puts $myMsg}
+			}
+		} 
     } Http - Wget {
       set myDir [file join $maindir sources $package]
       if {![file exists $myDir]} {
+        if {[llength $args] == 1} {
         set myFile [file normalize ./[file tail $args]]
+      		} else {
+            set myFile [file normalize ./[lindex $args end]]
+            set args [lrange $args 0 end-1]
+          }  
         puts "=== Source $type $package"
         if {[catch {
           Run $_(exec-wget) --no-check-certificate $args
