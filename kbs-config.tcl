@@ -264,7 +264,7 @@ Package kbskit8.6 {
     if {[lsearch -glob [Get kit] {mk*}] != -1} { Use mk4tcl2.4.9.7-static}
   }
   Source {Link kbskit0.4}
-  Configure {Config [Get srcdir-sys] --disable-shared}
+  Configure {Config [Get srcdir-sys] --disable-shared --disable-stubs}
   Make {
     set MYMK "[Get builddir-sys]/lib/mk4tcl2.4.9.7-static/Mk4tcl.a "
     if {$::tcl_platform(platform) == "windows"} {
@@ -323,9 +323,9 @@ Package memchan2.3 {
 #@endverbatim
 ## @defgroup mentry
 #@verbatim
-Package mentry3.7 {
+Package mentry3.10 {
   Require {Use wcb3.5}
-  Source {Wget http://www.nemethi.de/mentry/mentry3.7.tar.gz}
+  Source {Wget http://www.nemethi.de/mentry/mentry3.10.tar.gz}
   Configure {}
   Install {Tcl}
 }
@@ -468,6 +468,19 @@ Package sdx.kit {
   Configure {}
   Install {file copy -force [Get srcdir]/sdx-20110317.kit [Get builddir]/bin/sdx.kit}
 }
+
+#sdx tool command
+Package sdx {
+  Require {Use sdx.kit}
+  Source {Link sdx.kit}
+  Configure {
+	file copy -force [Get srcdir]/sdx-20110317.kit [Get builddir]/sdx/sdx.kit
+  }
+  Install {
+	Kit sdx.kit -vq-cli
+  }
+}
+
 #@endverbatim
 ## @defgroup snack
 #@verbatim
@@ -481,8 +494,8 @@ Package snack2.2 {
 #@endverbatim
 ## @defgroup tablelist
 #@verbatim
-Package tablelist5.16 {
-  Source {Wget http://www.nemethi.de/tablelist/tablelist5.16.tar.gz}
+Package tablelist6.21 {
+  Source {Wget http://www.nemethi.de/tablelist/tablelist6.21.tar.gz}
   Configure {}
   Install {Tcl}
 }
@@ -586,6 +599,7 @@ Package tdom0.8.3 {
   Install {Run make install-binaries}
   Clean {Run make clean}
 }
+
 #@endverbatim
 ## @defgroup thread
 #@verbatim
@@ -1014,6 +1028,7 @@ Package vectcltk0.2 {
    Clean {Run make clean}
    Test {Run make test}
 }
+
 #@endverbatim
 ## @defgroup kkgkit
 #@verbatim

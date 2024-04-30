@@ -1416,6 +1416,13 @@ proc ::kbs::config::Get {var} {
 # @param[in] striplevel number of path elements to be removed from the diff header
 # @param[in] patch      output of diff -ru
 
+
+
+
+
+
+
+
 proc ::kbs::config::PatchFile {striplevel patchfile} {
 	set dir [Get srcdir]
 	set fd [open [file join [Get basedir] $patchfile]]
@@ -1557,8 +1564,6 @@ proc ::kbs::config::Patch {dir striplevel patch} {
 		}
 	}
 }
-
-
 
 ##	The procedure call the args as external command with options.
 #	The procedure is available in all script arguments.
@@ -1722,7 +1727,6 @@ proc ::kbs::config::_configure {args} {
   }
   return $args
 }
-#-------------------------------------------------------------------------------
 
 #===============================================================================
 

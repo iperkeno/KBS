@@ -1362,6 +1362,7 @@ proc ::kbs::config::Patchexec {patch args} {
     puts "applied patch: {*}$cmd"
   }
 }
+
 #-------------------------------------------------------------------------------
 
 ##	The procedure call the args as external command with options.
@@ -1384,7 +1385,7 @@ proc ::kbs::config::Run {args} {
   } else {
     ::kbs::gui::_state;# keep gui alive
     if {$::tcl_platform(platform) eq {windows}} {
-      exec {*}$args >__dev__null__ 2>@stderr
+      exec {*}$args >NUL: 2>@stderr
     } else {
       exec {*}$args >/dev/null 2>@stderr
     }
@@ -1403,6 +1404,7 @@ proc ::kbs::config::_configure {args} {
   variable verbose
   variable _
 
+  set _(basedir) [file normalize [file dirname [info script]]]
   set myOpts {}
   # read configuration files
   foreach myFile [list [file join $::env(HOME) .kbsrc] [file join $maindir kbsrc]] {
