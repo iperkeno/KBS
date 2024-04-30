@@ -997,12 +997,12 @@ proc ::kbs::config::Install {script} {
   }
   puts "=== Install $myDir"
   if {$verbose} {puts $script}
-  foreach my {Kit Tcl Libdir} {
+  foreach my {Kit Tcl Libdir License} {
     interp alias $interp $my {} ::kbs::config::Install-$my
   }
   $interp eval [list cd $myDir]
   $interp eval $script
-  foreach my {Kit Tcl Libdir} {interp alias $interp $my}
+  foreach my {Kit Tcl Libdir License} {interp alias $interp $my}
 }
 #-------------------------------------------------------------------------------
 

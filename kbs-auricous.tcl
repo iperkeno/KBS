@@ -259,7 +259,7 @@ SOURCE_BROWSER		= YES
 INLINE_SOURCES		= YES
 STRIP_CODE_COMMENTS	= NO
 GENERATE_TREEVIEW	= YES
-GENERATE_LATEX          = NO
+GENERATE_LATEX    = NO
 }
   close $myFd
   exec $::kbs::config::_(exec-doxygen)
@@ -300,7 +300,7 @@ proc ::kbs::gui {args} {
 # @call{list all definitions of packages starting with 'kbs',./kbs.tcl list kbs\* Package}
 # @call{list specific definition parts of packages starting with 'kbs',./kbs.tcl list kbs\* Require Source}
 # 
-# @param[in] pattern	global search pattern for packages (default '*')
+# @param[in] pattern	global search pattern for packages name (default '*')
 # @param[in] args	which part should be printed (default all)
 proc ::kbs::list {{pattern *} args} {
   if {$args eq {}} {
