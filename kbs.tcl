@@ -1154,6 +1154,20 @@ proc ::kbs::config::Install-Tcl {{pkgname {}} {subdir {}}} {
 }
 #-------------------------------------------------------------------------------
 
+##	Command to install license file
+proc ::kbs::config::Install-License {path {name {}}} {
+	if {$name eq {}} {
+		set name [file tail [Get makedir]]
+	}
+	set srcfn [file join [Get srcdir] $path]
+	set destdir [file join [Get builddir] licenses]
+	set destfn [file join $destdir license.terms.$name]
+	file mkdir $destdir
+	file copy -force $srcfn $destfn
+}
+
+#-------------------------------------------------------------------------------
+
 ##	Eval script in 'makedir'.
 # @synopsis{Test script}
 #
