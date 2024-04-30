@@ -189,7 +189,7 @@ proc ::kbs::gui {args} {
 # @param[in] args	which part should be printed (default all)
 proc ::kbs::list {{pattern *} args} {
   if {$args eq {}} {
-    puts [join [lsort -dict [array names ::kbs::config::packagescript $pattern]] "\n"  ]
+    puts [lsort -dict [array names ::kbs::config::packagescript $pattern]]
   } else {
     foreach myPkg [lsort -dict [array names ::kbs::config::packagescript $pattern]] {
       set myName	""
@@ -440,7 +440,6 @@ namespace eval ::kbs::config {
   set _(application)	"Kitgen build system ($::kbs(version))";# application name
 #-------------------------------------------------------------------------------
 }   ;# end of ::kbs::config
-#===============================================================================
 
 ##	Return platfrom specific file name p.e. windows C:\... -> /...
 #
@@ -776,6 +775,7 @@ proc ::kbs::config::Source- {type args} {
             set myFile [file normalize ./[lindex $args end]]
             set args [lrange $args 0 end-1]
           }  
+		
         puts "=== Source $type $package"
         if {[catch {
           Run $_(exec-wget) --no-check-certificate $args
@@ -862,6 +862,16 @@ proc ::kbs::config::Configure {script} {
   $interp eval $script
   foreach my {Config Kit} {interp alias $interp $my}
 }
+
+proc kbs::config::nativepath {p} {
+	variable _
+	if {$_(sys) eq "win"} {
+		return [exec cygpath -w $p]
+	} else {
+		return $p
+	}
+}
+
 #-------------------------------------------------------------------------------
 ##	Call 'configure' with options.
 # @examples
@@ -1090,6 +1100,15 @@ proc ::kbs::config::Install-Kit {name args} {
     if {$myExe ne $myRun} break
   }
   if {$myExe eq {}} { return -code error "no interpreter in '$myTmp'" }
+
+  # if the input is already a kit, unwrap first to get vfs
+  if {[regexp {^(.*)\.kit$} $name -> basename]} {
+	# sdx refuses to overwrite the .vfs dir, so first remove it
+	file delete -force $basename.vfs
+    Run $myExe [file join [Get builddir] bin sdx.kit] unwrap $name
+	set name $basename
+  }
+
   if {$myRun eq {}} {
     Run $myExe [file join [Get builddir] bin sdx.kit] wrap $name
     file rename -force $name [file join [Get builddir] bin $name.kit]
