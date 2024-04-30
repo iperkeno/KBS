@@ -1,6 +1,6 @@
 #! /bin/sh
 ##
-# @file kbs.tcl aurious
+# @file kbs-aurious.tcl aurious
 #	Kitgen Build System
 # @mainpage
 # @synopsis{kbs.tcl ?-option? .. ?command? ..}

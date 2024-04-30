@@ -792,9 +792,13 @@ Package tktable2.10 {
 #@endverbatim
 ## @defgroup tls
 #@verbatim
-Package tls1.7.22 {
+Package tcltls1.7.22 {
   Source {Wget https://core.tcl-lang.org/tcltls/uv/tcltls-1.7.22.tar.gz}
-  Configure {Config [Get srcdir-sys]}
+  Configure {
+    # Patch [Get srcdir]/Makefile.in 13 \
+    #   {PACKAGE_INSTALL_DIR = $(TCL_PACKAGE_PATH)/tcltls$(PACKAGE_VERSION)} \
+    #   {PACKAGE_INSTALL_DIR = $(TCL_PACKAGE_PATH)/tls$(PACKAGE_VERSION)}
+    Config [Get srcdir-sys]  --enable-ssl-fastpath --with-tcl=[Get builddir-sys]/tcl8.6}
   Make {Run make}
   Install {Run make install}
   Clean {Run make clean}

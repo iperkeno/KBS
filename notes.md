@@ -20,8 +20,12 @@ populate the *packages* variable
 
 ## Build commands and examples
 
-```
+```tcl
 tclsh ./kbs.tcl -v -builddir=buildLinux -r -mk-bi -bi="tk8.6" install kbskit8.6
+```
+
+```tcl
+    MAKEFLAGS=-j4 tclsh ./kbs.tcl -v -builddir=buildLinux -r -mk-bi -bi="tk8.6 tls1.7.22 tcllib1.21" install kbskit8.6
 ```
 
 ## KIT generation process
@@ -74,3 +78,14 @@ Contact: <stephanearnold@yahoo.fr> & <sarnold75@users.sourceforge.net>
 
 ## a package fwtching script
 https://wiki.tcl-lang.org/page/A+Tcl+repository
+
+
+
+
+http://prdownloads.sourceforge.net/tcl/tcl9.0b1-src.tar.gz
+
+
+
+    # Patch [Get srcdir]/Makefile.in 13 \
+    #   { PACKAGE_INSTALL_DIR = $(TCL_PACKAGE_PATH)/tcltls$(PACKAGE_VERSION)} \
+    #   { PACKAGE_INSTALL_DIR = $(TCL_PACKAGE_PATH)/tls$(PACKAGE_VERSION)}
