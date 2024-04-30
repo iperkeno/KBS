@@ -1,6 +1,6 @@
 # Ignora le cartelle che contengono la parola "build" nel nome
 *build*
-
+sources
 *test*
 
 kbs-auricous.tcl
