@@ -423,6 +423,8 @@ namespace eval ::kbs::config {
   set _(exec-git)	    [lindex "[auto_execok git] git" 0]
   set _(exec-unzip)	  [lindex "[auto_execok unzip] unzip" 0]
   set _(exec-wget)	  [lindex "[auto_execok wget] wget" 0]
+  set _(exec-curl)	  [lindex "[auto_execok curl] curl" 0]
+  set _(exec-autoconf)[lindex "[auto_execok autoconf] autoconf" 0]
   set _(exec-patch)	  [lindex "[auto_execok patch] patch" 0]
   set _(exec-doxygen)	[lindex "[auto_execok doxygen] doxygen" 0]
   set _(kitcli)		    {}
