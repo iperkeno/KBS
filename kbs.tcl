@@ -424,7 +424,7 @@ namespace eval ::kbs::config {
   set _(exec-unzip)	  [lindex "[auto_execok unzip] unzip" 0]
   set _(exec-wget)	  [lindex "[auto_execok wget] wget" 0]
   set _(exec-curl)	  [lindex "[auto_execok curl] curl" 0]
-  set _(exec-autoconf)[lindex "[auto_execok autoconf] autoconf" 0]
+  set _(exec-autoconf) [lindex "[auto_execok autoconf] autoconf" 0]
   set _(exec-patch)	  [lindex "[auto_execok patch] patch" 0]
   set _(exec-doxygen)	[lindex "[auto_execok doxygen] doxygen" 0]
   set _(kitcli)		    {}
@@ -631,7 +631,7 @@ proc ::kbs::config::Require-Use {args} {
 #	'Svn path'     - call 'svn co path 'srcdir''
 #	'Http path'    - call 'http get path', unpack *.tar.gz, *.tar.bz2,
 #			 *.tgz or *.tbz2 files
-#	'Wget file'    - call 'wget file', unpack *.tar.gz *.tar.bz2,
+#	'Wget file'    - call 'curl file', unpack *.tar.gz *.tar.bz2,
 #			  *.tgz  or *.tbz2 files
 #	'Tgz file'     - call 'tar xzf file'
 #	'Tbz2 file'    - call 'tar xjf file'
@@ -780,7 +780,7 @@ proc ::kbs::config::Source- {type args} {
 		
         puts "=== Source $type $package"
         if {[catch {
-          Run $_(exec-wget) --no-check-certificate $args
+          Run $_(exec-curl)  --retry 5 --retry-connrefused -L -o $myFile {*}$args
           # unpack if necessary
           switch -glob $myFile {
             *.tgz - *.tar.gz - *.tgz?uuid=* - *.tar.gz?uuid=* {
@@ -1364,7 +1364,160 @@ proc ::kbs::config::Patchexec {patch args} {
     puts "applied patch: {*}$cmd"
   }
 }
+#-------------------------------------------------------------------------------
 
+##	Apply a patch in unified diff format
+# @synopsis{PatchApply directory striplevel patch}
+#
+# @examples
+#	PatchApply [Get srcdir] 1 {
+#.... here comes the output from diff -ru ...
+# }
+# @param[in] dir        root directory of the patch, usually srcdir
+# @param[in] striplevel number of path elements to be removed from the diff header
+# @param[in] patch      output of diff -ru
+
+proc ::kbs::config::PatchFile {striplevel patchfile} {
+	set dir [Get srcdir]
+	set fd [open [file join [Get basedir] $patchfile]]
+	fconfigure $fd -encoding binary
+	PatchApply $dir $striplevel [read $fd]
+	close $fd
+}
+
+proc ::kbs::config::PatchApply {dir striplevel patch} {
+	set patchlines [split $patch \n]
+	set inhunk false
+	set oldcode {}
+	set newcode {}
+	
+	for {set lineidx 0} {$lineidx<[llength $patchlines]} {incr lineidx} {
+		set line [lindex $patchlines $lineidx]
+		if {[string match diff* $line]} {
+			# a diff block starts. Next two lines should be
+			# --- oldfile date time TZ
+			# +++ newfile date time TZ
+			incr lineidx
+			set in [lindex $patchlines $lineidx]
+			incr lineidx
+			set out [lindex $patchlines $lineidx]
+
+			if {![string match ---* $in] || ![string match +++* $out]} {
+				puts $in
+				puts $out
+				return -code error "Patch not in unified diff format, line $lineidx $in $out"
+			}
+
+			# the quoting is compatible with list
+			lassign $in -> oldfile
+			lassign $out -> newfile
+
+			set fntopatch [file join $dir {*}[lrange [file split $oldfile] $striplevel end]]
+			set inhunk false
+			#puts "Found diffline for $fntopatch"
+			continue
+		}
+
+		# state machine for parsing the hunks
+		set typechar [string index $line 0]
+		set codeline [string range $line 1 end]
+		switch $typechar {
+			@ {
+				if {![regexp {@@\s+\-(\d+),(\d+)\s+\+(\d+),(\d+)\s+@@} $line \
+					-> oldstart oldlen newstart newlen]} {
+					return code -error "Erroneous hunk in line $lindeidx, $line"
+				}
+				# adjust line numbers for 0-based indexing
+				incr oldstart -1
+				incr newstart -1
+				#puts "New hunk"
+				set newcode {}
+				set oldcode {}
+				set inhunk true
+			}
+			- { # line only in old code
+				if {$inhunk} {
+					lappend oldcode $codeline
+				}
+			}
+			+ { # line only in new code
+				if {$inhunk} {
+					lappend newcode $codeline
+				}
+			}
+			" " { # common line
+				if {$inhunk} {
+					lappend oldcode $codeline
+					lappend newcode $codeline
+				}
+			}
+			default {
+				# puts "Junk: $codeline";
+				continue
+			}
+		}
+		# test if the hunk is complete
+		if {[llength $oldcode]==$oldlen && [llength $newcode]==$newlen} {
+			set hunk [dict create \
+				oldcode $oldcode \
+				newcode $newcode \
+				oldstart $oldstart \
+				newstart $newstart]
+			#puts "hunk complete: $hunk"
+			set inhunk false
+			dict lappend patchdict $fntopatch $hunk
+		}
+	}
+
+	# now we have parsed the patch. Apply
+	dict for {fn hunks} $patchdict {
+		puts "Patching file $fn"
+		if {[catch {open $fn} fd]} {
+			set orig {}
+		} else {
+			set orig [split [read $fd] \n]
+		}
+		close $fd
+
+		set patched $orig
+
+		set fail false
+		set already_applied false
+		set hunknr 1
+		foreach hunk $hunks {
+			dict with hunk {
+				set oldend [expr {$oldstart+[llength $oldcode]-1}]
+				set newend [expr {$newstart+[llength $newcode]-1}]
+				# check if the hunk matches
+				set origcode [lrange $orig $oldstart $oldend]
+				if {$origcode ne $oldcode} {
+					set fail true
+					puts "Hunk #$hunknr failed"
+					# check if the patch is already applied
+					set origcode_applied [lrange $orig $newstart $newend]
+					if {$origcode_applied eq $newcode} {
+						set already_applied true
+						puts "Patch already applied"
+					} else {
+						puts "Expected:\n[join $oldcode \n]"
+						puts "Seen:\n[join $origcode \n]"
+					}
+					break
+				}
+				# apply patch
+				set patched [list {*}[lrange $patched 0 $newstart-1] {*}$newcode {*}[lrange $orig $oldend+1 end]]
+			}
+			incr hunknr
+		}
+
+		if {!$fail} {
+			# success - write the result back
+			set fd [open $fn w]
+			puts -nonewline $fd [join $patched \n]
+			close $fd
+		}
+	}
+}
 #-------------------------------------------------------------------------------
 
 ##	The procedure call the args as external command with options.
@@ -1436,7 +1589,7 @@ proc ::kbs::config::_configure {args} {
       -pkgfile=* {
         set myPkgfile [file normalize [string range $myCmd 9 end]]
       } -builddir=* {
-	set myFile [file normalize [string range $myCmd 10 end]]
+	      set myFile [file normalize [string range $myCmd 10 end]]
         set _(builddir) $myFile
       } -bi=* {
         set _(bi) [string range $myCmd 4 end]
@@ -1447,7 +1600,7 @@ proc ::kbs::config::_configure {args} {
       } -r - -recursive {
         set recursive 1
       } -v - -verbose {
-	set verbose 1
+	      set verbose 1
       } --enable-* {
         set _([string range [lindex [split $myCmd {=}] 0] 8 end]) $myCmd
       } --disable-* {
@@ -1468,6 +1621,8 @@ proc ::kbs::config::_configure {args} {
         set _(exec-unzip) [string range $myCmd 7 end]
       } -wget=* {
         set _(exec-wget) [string range $myCmd 6 end]
+      } -curl=* {
+        set _(exec-curl) [string range $myCmd 6 end]
       } -doxygen=* {
         set _(exec-doxygen) [string range $myCmd 9 end]
       } -kitcli=* {
@@ -1562,7 +1717,7 @@ proc ::kbs_main {argv} {
     exit 0
   } else {
     set myList {}
-#lists all commands in namespace'::kbs'
+    #lists all commands in namespace'::kbs'
     foreach myKnownCmd [lsort [info commands ::kbs::*]] { 
       lappend myList [namespace tail $myKnownCmd]
     }

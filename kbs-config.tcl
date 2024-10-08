@@ -885,6 +885,29 @@ Package udp1.0.11 {
   Install {Run make install-binaries}
   Clean {Run make clean}
 }
+
+
+Package vfs1.4.2 {
+  Source {Wget https://core.tcl-lang.org/tclvfs/zip/8cdab08997/tclvfs-8cdab08997.zip}
+  Configure {
+    Config [Get srcdir-sys] --with-tclinclude=[Get builddir-sys]/include
+  }
+  Make {Run make}
+  Install {Run make install-binaries}
+  Clean {Run make clean}
+}
+
+Package vfs1.4.2-static {
+  Source {Link vfs1.4.2}
+  Configure {
+    Config [Get srcdir-sys] --disable-shared --with-tclinclude=[Get builddir-sys]/include}
+  Make {Run make}
+  Install {Run make install-binaries}
+  Clean {Run make clean}
+}
+
+
+
 #@endverbatim
 ## @defgroup vfs
 #@verbatim
@@ -897,6 +920,7 @@ Package vfs1.4 {
   Install {Run make install-binaries}
   Clean {Run make clean}
 }
+
 #@endverbatim
 ## @defgroup vfs
 #@verbatim

@@ -15,9 +15,6 @@ the function:
 populate the *packages* variable
 
 
-
-
-
 ## Build commands and examples
 
 ```tcl
@@ -79,13 +76,15 @@ Contact: <stephanearnold@yahoo.fr> & <sarnold75@users.sourceforge.net>
 ## a package fwtching script
 https://wiki.tcl-lang.org/page/A+Tcl+repository
 
-
-
-
 http://prdownloads.sourceforge.net/tcl/tcl9.0b1-src.tar.gz
-
-
 
     # Patch [Get srcdir]/Makefile.in 13 \
     #   { PACKAGE_INSTALL_DIR = $(TCL_PACKAGE_PATH)/tcltls$(PACKAGE_VERSION)} \
     #   { PACKAGE_INSTALL_DIR = $(TCL_PACKAGE_PATH)/tls$(PACKAGE_VERSION)}
+
+
+
+### readline library wrapper
+rlwrap tclsh
+
+consider *tcl-linenoise* at https://andreas-kupries.github.io/tcl-linenoise/
