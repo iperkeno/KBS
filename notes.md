@@ -54,26 +54,23 @@ TODO add in the kbs-config file the dependencies download; we can addd it in SOU
 Doxigen does not support tcl anymore.
 TODO: doxygen: remove action related to doxigen
 TODO: doxygen: remove doxygen from help
-TODO: doxygen: substitute with a tcl script for generating a markdown documentation
+TODO: doxygen: substitute with a tcl script for generating a markdown documentation, conside RUFF!
 
 ## Tcl-Pkg
 
 Sarnold offers ...
 
 What : Tcl-Pkg  
-
 Where : http://sourceforge.net/projects/tcl-pkg   
-
 Dependencies : Tcl/Tk 8.4, BWidget 1.7, TclXml 2.6    
-
-Description : Tcl-Pkg is a sort of client-server online Tcl package      repository browser. The purpose of this software is to access package data via a distributed (as in distributed computing) sort of repository.
+Description : Tcl-Pkg is a sort of client-server online Tcl package repository browser. The purpose of this software is to access package data via a distributed (as in distributed computing) sort of repository.
 Then, with simple Internet access and a Web browser, users download static or even dynamically generated up-to-date information in XML files and are able to view the resources or their favorite Tcl-related software, packages and extensions.
 
 Currently at version 0.5.3 
 Updated: 11/2006
 Contact: <stephanearnold@yahoo.fr> & <sarnold75@users.sourceforge.net>
 
-## a package fwtching script
+## a package fetching script
 https://wiki.tcl-lang.org/page/A+Tcl+repository
 
 http://prdownloads.sourceforge.net/tcl/tcl9.0b1-src.tar.gz
