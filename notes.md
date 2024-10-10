@@ -3,7 +3,7 @@
 ## *config* and *configure*
 
 The use of two terms *config* and *configure* makes the read of code confusing.
-The idea is to substitute the terme *config* with *setup*
+The idea is to substitute the term *config* with *setup*
 
 
 ## variable *packages*
@@ -17,17 +17,17 @@ populate the *packages* variable
 
 ## Build commands and examples
 
-```tcl
+```bash
 tclsh ./kbs.tcl -v -builddir=buildLinux -r -mk-bi -bi="tk8.6" install kbskit8.6
 ```
 
-```tcl
-    MAKEFLAGS=-j4 tclsh ./kbs.tcl -v -builddir=buildLinux -r -mk-bi -bi="tk8.6 tls1.7.22 tcllib1.21" install kbskit8.6
+```bash
+MAKEFLAGS=-j4 tclsh ./kbs.tcl -v -builddir=buildLinux -r -mk-bi -bi="tk8.6 tls1.7.22 tcllib1.21" install kbskit8.6
 ```
 
 ## KIT generation process
 
-1. source/configure/build/install packages TCL nad Tk
+1. source/configure/build/install packages TCL and Tk
 2. source/configure/build/install additional packages
 3. source/configure/build/install kbskit8.6
 
@@ -44,9 +44,9 @@ for KITGEN based on makefile, is implemented an interesting method to generate t
 3. `UPX tclkit` to compress it
 4. `runtime-kit -init-`  with function `setupvfs.tcl` with options - t`$(KIT_OPTS)` to `tclkit`
 
-TODO modificare basekit in mod da generare un basekit con upx e poi caricare le librerie a seconda della configurazione.
+TODO modificare basekit in modo da generare un basekit con upx e poi caricare le librerie a seconda della configurazione.
 
-TODO add in the kbs-config file the dependencies download; we can addd it in SOURCE case with `sudo apt-get install xxx-dev `
+TODO add in the kbs-config file the dependencies download; we can addd it in SOURCE case with `sudo apt-get install xxx-dev`
 
 
 
