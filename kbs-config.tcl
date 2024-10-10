@@ -1,4 +1,4 @@
-# begin of DB
+# begin of Tcl/Tk Pakages DB
 namespace eval ::kbs::config {
 # @{
 ## @defgroup __
