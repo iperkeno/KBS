@@ -79,9 +79,7 @@ http://prdownloads.sourceforge.net/tcl/tcl9.0b1-src.tar.gz
     #   { PACKAGE_INSTALL_DIR = $(TCL_PACKAGE_PATH)/tcltls$(PACKAGE_VERSION)} \
     #   { PACKAGE_INSTALL_DIR = $(TCL_PACKAGE_PATH)/tls$(PACKAGE_VERSION)}
 
-
-
-### readline library wrapper
+### `readline` library wrapper
 rlwrap tclsh
 
 consider *tcl-linenoise* at https://andreas-kupries.github.io/tcl-linenoise/
