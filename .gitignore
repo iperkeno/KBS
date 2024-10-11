@@ -2,5 +2,6 @@
 *build*
 sources
 *test*
+doc
 
 kbs-auricous.tcl
