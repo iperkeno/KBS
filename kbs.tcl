@@ -316,8 +316,8 @@ proc ::kbs::distclean {args} {
   # restore old body
   proc ::kbs::build::Source [info args ::kbs::build::Source] $myBody
 }
-#===============================================================================
 
+#===============================================================================
 ##	Contain internally used functions and variables.
 namespace eval ::kbs::build {
   namespace export Run Get  Require Source Configure Make Install Clean 
@@ -375,7 +375,7 @@ namespace eval ::kbs::build {
   variable pkgfile
   set pkgfile {}
 
-##	The array variable contain usefull information of the current building
+##	The array variable '_' contain usefull information of the current building
 #	process. All variables are provided with default values.
 #	Changing of the default values can be done in the following order:
 #	- file '$(HOME)/.kbsrc' and file './kbsrc' -- Lines starting with '#'
@@ -429,11 +429,10 @@ namespace eval ::kbs::build {
   set _(builddir)	    [file join $maindir build[string map {{ } {}} $::tcl_platform(os)]]
   set _(builddir-sys)	$_(builddir)
   set _(application)	"Kitgen build system ($::kbs(version))";# application name
-#-------------------------------------------------------------------------------
 }   ;# end of ::kbs::build
+#-------------------------------------------------------------------------------
 
 ##	Return platfrom specific file name p.e. windows C:\... -> /...
-#
 # @param[in] file	file name to convert
 proc ::kbs::build::_sys {file} {
   if {$::tcl_platform(platform) eq {windows} && [string index $file 1] eq {:}} {
@@ -646,8 +645,8 @@ proc ::kbs::build::Source {script} {
   }
   set _(srcdir-sys) [_sys $_(srcdir)]
 }
-#-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
 ##	Process internal 'Source' commands.
 # @synopsis{
 #	Link dir
