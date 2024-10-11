@@ -6,3 +6,4 @@
   - Added *PatchFile* to Apply a patch in unified diff format.
   - Added *Install-License*
   - PKG *vfs* updated to version 1.4.2
+  - rename proc ::kbs::config to ::kbs::display-config, modified the help content.
