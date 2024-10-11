@@ -7,3 +7,4 @@
   - Added *Install-License*
   - PKG *vfs* updated to version 1.4.2
   - rename proc ::kbs::config to ::kbs::display-config, modified the help content.
+  - refactoring kbs::config to kbs::build 
