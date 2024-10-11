@@ -73,7 +73,7 @@ command:
   help              this text
   doc               create program documentation (./doc/kbs.html)
   license           display license information
-  config            display used values of configuration variables
+  display-config    display used values of configuration variables
   gui               start graphical user interface
   list ?pattern? .. list packages matching pattern (default is *)
                     Trailing words print these parts of the definition too.

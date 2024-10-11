@@ -158,7 +158,7 @@ GENERATE_LATEX    = NO
 ##	Display names and values of configuration variables useable with 'Get'.
 # @examples
 # @call{display used values,./kbs.tcl config}
-proc ::kbs::config {} {
+proc ::kbs::display-config {} {
   foreach myName [lsort [array names ::kbs::config::_]] {
     puts [format {%-20s = %s} "\[Get $myName\]" [::kbs::config::Get $myName]]
   }
@@ -1701,7 +1701,6 @@ proc ::kbs_main {argv} {
     puts stderr "Option error (try './kbs.tcl' to get brief help): $argv"
     exit 1
   }
-
 
   # try to execute command
   set cmd [lindex $argv 0]
