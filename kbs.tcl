@@ -118,7 +118,7 @@ source kbs-help.tcl       ;# load KBS help definition
 # @examples
 # @call{display usage help message,./kbs.tcl help}
 proc ::kbs::help {} {
-  puts "[::kbs::config::Get application]"
+  puts "[::kbs::build::Get application]"
   puts $::kbs(help)
 }
 #-------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ GENERATE_TREEVIEW	= YES
 GENERATE_LATEX    = NO
 }
   close $myFd
-  exec $::kbs::config::_(exec-doxygen)
+  exec $::kbs::build::_(exec-doxygen)
 }
 #-------------------------------------------------------------------------------
 
@@ -159,8 +159,8 @@ GENERATE_LATEX    = NO
 # @examples
 # @call{display used values,./kbs.tcl config}
 proc ::kbs::display-config {} {
-  foreach myName [lsort [array names ::kbs::config::_]] {
-    puts [format {%-20s = %s} "\[Get $myName\]" [::kbs::config::Get $myName]]
+  foreach myName [lsort [array names ::kbs::build::_]] {
+    puts [format {%-20s = %s} "\[Get $myName\]" [::kbs::build::Get $myName]]
   }
 }
 
@@ -187,9 +187,9 @@ proc ::kbs::gui {args} {
 # @param[in] args	which part should be printed (default all)
 proc ::kbs::list {{pattern *} args} {
   if {$args eq {}} {
-    puts [lsort -dict [array names ::kbs::config::packagescript $pattern]]
+    puts [lsort -dict [array names ::kbs::build::packagescript $pattern]]
   } else {
-    foreach myPkg [lsort -dict [array names ::kbs::config::packagescript $pattern]] {
+    foreach myPkg [lsort -dict [array names ::kbs::build::packagescript $pattern]] {
       set myName	""
       set myVersion	""
       foreach myChar [split $myPkg {}] {
@@ -200,7 +200,7 @@ proc ::kbs::list {{pattern *} args} {
         }
       }
       puts "## @page	$myName\n# @version	$myVersion\n#@verbatim\nPackage $myPkg {"
-      foreach {myCmd myScript} $::kbs::config::packagescript($myPkg) {
+      foreach {myCmd myScript} $::kbs::build::packagescript($myPkg) {
         if {$args eq {Package} || [lsearch $args $myCmd] >= 0} {
           puts "  $myCmd {$myScript}"
         }
@@ -218,7 +218,7 @@ proc ::kbs::list {{pattern *} args} {
 # 
 # @param[in] args	list of packages
 proc ::kbs::require {args} {
-  ::kbs::config::_init {Require} $args
+  ::kbs::build::_init {Require} $args
 }
 #-------------------------------------------------------------------------------
 
@@ -231,7 +231,7 @@ proc ::kbs::require {args} {
 # 
 # @param[in] args	list of packages
 proc ::kbs::sources {args} {
-  ::kbs::config::_init {Require Source} $args
+  ::kbs::build::_init {Require Source} $args
 }
 #-------------------------------------------------------------------------------
 
@@ -242,8 +242,8 @@ proc ::kbs::sources {args} {
 # @call{configure the package and its dependencies,./kbs.tcl -r configure kbskit8.5}
 # 
 # @param[in] args	list of packages
-proc ::kbs::configure {args} {
-  ::kbs::config::_init {Require Source Configure} $args
+proc ::kbs::buildure {args} {
+  ::kbs::build::_init {Require Source Configure} $args
 }
 #-------------------------------------------------------------------------------
 
@@ -255,7 +255,7 @@ proc ::kbs::configure {args} {
 # 
 # @param[in] args	list of packages
 proc ::kbs::make {args} {
-  ::kbs::config::_init {Require Source Configure Make} $args
+  ::kbs::build::_init {Require Source Configure Make} $args
 }
 #-------------------------------------------------------------------------------
 
@@ -266,7 +266,7 @@ proc ::kbs::make {args} {
 # 
 # @param[in] args	list of packages
 proc ::kbs::test {args} {
-  ::kbs::config::_init {Require Source Make Test} $args
+  ::kbs::build::_init {Require Source Make Test} $args
 }
 #-------------------------------------------------------------------------------
 
@@ -278,7 +278,7 @@ proc ::kbs::test {args} {
 # 
 # @param[in] args	list of packages
 proc ::kbs::install {args} {
-  ::kbs::config::_init {Require Source Configure Make Install} $args
+  ::kbs::build::_init {Require Source Configure Make Install} $args
 }
 #-------------------------------------------------------------------------------
 
@@ -290,7 +290,7 @@ proc ::kbs::install {args} {
 # 
 # @param[in] args	list of packages
 proc ::kbs::clean {args} {
-  ::kbs::config::_init {Clean} $args
+  ::kbs::build::_init {Clean} $args
 }
 #-------------------------------------------------------------------------------
 
@@ -304,45 +304,40 @@ proc ::kbs::clean {args} {
 # @param[in] args	list of packages
 proc ::kbs::distclean {args} {
   # save old body
-  set myBody [info body ::kbs::config::Source]
-  proc ::kbs::config::Source [info args ::kbs::config::Source] {
+  set myBody [info body ::kbs::build::Source]
+  proc ::kbs::build::Source [info args ::kbs::build::Source] {
     set myDir [Get makedir]
     if {[file exist $myDir]} {
       puts "=== Distclean: $myDir"
       file delete -force $myDir
     }
   }
-  ::kbs::config::_init {Require Source} $args
+  ::kbs::build::_init {Require Source} $args
   # restore old body
-  proc ::kbs::config::Source [info args ::kbs::config::Source] $myBody
+  proc ::kbs::build::Source [info args ::kbs::build::Source] $myBody
 }
 #===============================================================================
 
 ##	Contain internally used functions and variables.
-namespace eval ::kbs::config {
-  namespace export Run Get Patch PatchFile Require Source Configure Make Install Clean Test
-#-------------------------------------------------------------------------------
+namespace eval ::kbs::build {
+  namespace export Run Get  Require Source Configure Make Install Clean 
+  namespace export Patch PatchFile Test
 
 ##	Internal variable containing top level script directory.
   variable maindir [file normalize [file dirname [info script]]]
-#-------------------------------------------------------------------------------
 
 ##	Internal variable with parsed package definitions from *.kbs files.
 #       'Include' parts are resolved.
   variable packages
 
-#-------------------------------------------------------------------------------
 ##	Internal variable with original package definitions from *.kbs files.
   variable packagescript
-#-------------------------------------------------------------------------------
 
 ##	Internal variable containing current package name.
   variable package
-#-------------------------------------------------------------------------------
 
 ##	Internal variable containing list of already prepared packages.
   variable ready [list]
-#-------------------------------------------------------------------------------
 
 ##	If set (-i or -ignore switch) then proceed in case of errors.
 # @examples
@@ -352,7 +347,6 @@ namespace eval ::kbs::config {
 # }
   variable ignore
   set ignore 0
-#-------------------------------------------------------------------------------
 
 ##	If set (-r or -recursive switch) then all packages under 'Require'
 #	are also used.
@@ -363,7 +357,6 @@ namespace eval ::kbs::config {
 # } 
   variable recursive
   set recursive 0
-#-------------------------------------------------------------------------------
 
 ##	If set (-v or -verbose switch) then all stdout will be removed.
 #
@@ -374,7 +367,6 @@ namespace eval ::kbs::config {
 # }
   variable verbose
   set verbose 0
-#-------------------------------------------------------------------------------
 
 ##	Define startup kbs package definition file.
 #	Default is empty and use only internal definitions.
@@ -382,7 +374,6 @@ namespace eval ::kbs::config {
 # @call{start with own package definition file,./kbs.tcl -pkgfile=/my/package/file list}
   variable pkgfile
   set pkgfile {}
-#-------------------------------------------------------------------------------
 
 ##	The array variable contain usefull information of the current building
 #	process. All variables are provided with default values.
@@ -394,7 +385,7 @@ namespace eval ::kbs::config {
 #	  as command line arguments.
 #	- command line 
 #	It is also possible to set values in the 'Package' definition file
-#	outside the 'Package' definition (p.e. 'set ::kbs::config::_(CC) g++').
+#	outside the 'Package' definition (p.e. 'set ::kbs::build::_(CC) g++').
 # @examples
 # @call{build debugging version,./kbs.tcl -CC=/my/cc --enable-symbols install tclx8.4}
 # @call{create kbsmk8.5-[cli|dyn|gui] interpreter,./kbs.tcl -mk install kbskit8.5}
@@ -439,12 +430,12 @@ namespace eval ::kbs::config {
   set _(builddir-sys)	$_(builddir)
   set _(application)	"Kitgen build system ($::kbs(version))";# application name
 #-------------------------------------------------------------------------------
-}   ;# end of ::kbs::config
+}   ;# end of ::kbs::build
 
 ##	Return platfrom specific file name p.e. windows C:\... -> /...
 #
 # @param[in] file	file name to convert
-proc ::kbs::config::_sys {file} {
+proc ::kbs::build::_sys {file} {
   if {$::tcl_platform(platform) eq {windows} && [string index $file 1] eq {:}} {
     return "/[string tolower [string index $file 0]][string range $file 2 end]"
   } else {
@@ -459,7 +450,7 @@ proc ::kbs::config::_sys {file} {
 #
 # @param[in] used	list of available commands
 # @param[in] list	list of packages
-proc ::kbs::config::_init {used list} {
+proc ::kbs::build::_init {used list} {
   variable packages
   variable package
   variable ignore
@@ -476,9 +467,9 @@ proc ::kbs::config::_init {used list} {
   set interp [interp create]
   foreach myProc [namespace export] {
     if {$myProc in $used} {
-      interp alias $interp $myProc {} ::kbs::config::$myProc
+      interp alias $interp $myProc {} ::kbs::build::$myProc
     } else {
-      $interp eval [list proc $myProc [info args ::kbs::config::$myProc] {}]
+      $interp eval [list proc $myProc [info args ::kbs::build::$myProc] {}]
     }
   }
   # now process command
@@ -525,7 +516,7 @@ proc ::kbs::config::_init {used list} {
 #	Special commands:
 #	'Include package'  -- include current 'package' script. The command
 #	use the current definitions (snapshot semantic).
-proc ::kbs::config::Package {name script} {
+proc ::kbs::build::Package {name script} {
   variable packages
   variable packagescript
 
@@ -554,7 +545,7 @@ proc ::kbs::config::Package {name script} {
 #  @param script	containing package dependencies.
 #	Available functions are: 'Run', 'Get', 'Patch'
 #	'Use ?package..?' -- see Require-Use()
-proc ::kbs::config::Require {script} {
+proc ::kbs::build::Require {script} {
   variable recursive
   if {$recursive == 0} return
   variable verbose
@@ -563,7 +554,7 @@ proc ::kbs::config::Require {script} {
 
   puts "=== Require $package"
   if {$verbose} {puts $script}
-  interp alias $interp Use {} ::kbs::config::Require-Use
+  interp alias $interp Use {} ::kbs::build::Require-Use
   $interp eval $script
   foreach my {Use} {interp alias $interp $my}
 }
@@ -575,7 +566,7 @@ proc ::kbs::config::Require {script} {
 # @synopsis{Use ?package? ..}
 #
 # @param[in] args	one or more 'Package' names
-proc ::kbs::config::Require-Use {args} {
+proc ::kbs::build::Require-Use {args} {
   variable packages
   variable ready
   variable package
@@ -636,14 +627,14 @@ proc ::kbs::config::Require-Use {args} {
 #	'Zip file'     - call 'unzip file'
 #	'Link package' - use sources from "package"
 #	'Script text'  - eval 'text'
-proc ::kbs::config::Source {script} {
+proc ::kbs::build::Source {script} {
   variable interp
   variable package
   variable _
 
   ::kbs::gui::_state -running "" -package $package
   foreach my {Script Http Wget Link Cvs Svn Git Tgz Tbz2 Zip} {
-    interp alias $interp $my {} ::kbs::config::Source- $my
+    interp alias $interp $my {} ::kbs::build::Source- $my
   }
   array set _ {srcdir {} srcdir-sys {}}
   $interp eval $script
@@ -672,7 +663,7 @@ proc ::kbs::config::Source {script} {
 #
 # @param[in] type	one of the valid source types, see Source().
 # @param[in] args	depending on the given 'type' 
-proc ::kbs::config::Source- {type args} {
+proc ::kbs::build::Source- {type args} {
   variable maindir
   variable package
   variable verbose
@@ -846,7 +837,7 @@ proc ::kbs::config::Source- {type args} {
 #		functions to help configure the current package
 #	Available functions are: 'Run', 'Get', 'Patch'
 #	'Kit ?main.tcl? ?pkg..?' -- see Configure-Kit()
-proc ::kbs::config::Configure {script} {
+proc ::kbs::build::Configure {script} {
   variable verbose
   variable interp
 
@@ -855,7 +846,7 @@ proc ::kbs::config::Configure {script} {
   puts "=== Configure $myDir"
   if {$verbose} {puts $script}
   foreach my {Config Kit} {
-    interp alias $interp $my {} ::kbs::config::Configure-$my
+    interp alias $interp $my {} ::kbs::build::Configure-$my
   }
   file mkdir $myDir
   $interp eval [list cd $myDir]
@@ -863,7 +854,7 @@ proc ::kbs::config::Configure {script} {
   foreach my {Config Kit} {interp alias $interp $my}
 }
 
-proc kbs::config::nativepath {p} {
+proc ::kbs::build::nativepath {p} {
 	variable _
 	if {$_(sys) eq "win"} {
 		return [exec cygpath -w $p]
@@ -878,7 +869,7 @@ proc kbs::config::nativepath {p} {
 #	Configure [Get builddir-sys]/configure --enabled-shared=no
 # @param [in] path	Path to configure script
 # @param [in] args	Additional configure arguments
-proc ::kbs::config::Configure-Config {path args} {
+proc ::kbs::build::Configure-Config {path args} {
   variable _
 
   # collect available options
@@ -916,7 +907,7 @@ proc ::kbs::config::Configure-Config {path args} {
 # 
 # @param[in] maincode	startup code
 # @param[in] args	additional args
-proc ::kbs::config::Configure-Kit {maincode args} {
+proc ::kbs::build::Configure-Kit {maincode args} {
   variable _
 
   if {[file exists [file join [Get srcdir-sys] main.tcl]]} {
@@ -949,7 +940,7 @@ if {[catch {
 #		functions to help building the current package
 #	Available functions are: 'Run', 'Get', 'Patch'
 #	'Kit name ?pkglibdir..?' -- see Make-Kit()
-proc ::kbs::config::Make {script} {
+proc ::kbs::build::Make {script} {
   variable verbose
   variable interp
 
@@ -959,7 +950,7 @@ proc ::kbs::config::Make {script} {
   }
   puts "=== Make $myDir"
   if {$verbose} {puts $script}
-  interp alias $interp Kit {} ::kbs::config::Make-Kit
+  interp alias $interp Kit {} ::kbs::build::Make-Kit
   $interp eval [list cd $myDir]
   $interp eval $script
   foreach my {Kit} {interp alias $interp $my}
@@ -983,7 +974,7 @@ proc ::kbs::config::Make {script} {
 #
 # @param[in] name	name of vfs directory (without extension) to use
 # @param[in] args	additional args
-proc ::kbs::config::Make-Kit {name args} {
+proc ::kbs::build::Make-Kit {name args} {
   variable _
 
   #TODO 'file link ...' does not work under 'msys'
@@ -1016,7 +1007,7 @@ proc ::kbs::config::Make-Kit {name args} {
 #	'Libdir dirname' -- see Install-Libdir()
 #	'Kit name args'  -- see Install-Kit()
 #	'Tcl ?package?'  -- see Install-Tcl()
-proc ::kbs::config::Install {script} {
+proc ::kbs::build::Install {script} {
   variable verbose
   variable interp
 
@@ -1027,7 +1018,7 @@ proc ::kbs::config::Install {script} {
   puts "=== Install $myDir"
   if {$verbose} {puts $script}
   foreach my {Kit Tcl Libdir License} {
-    interp alias $interp $my {} ::kbs::config::Install-$my
+    interp alias $interp $my {} ::kbs::build::Install-$my
   }
   $interp eval [list cd $myDir]
   $interp eval $script
@@ -1042,7 +1033,7 @@ proc ::kbs::config::Install {script} {
 #
 # @param[in] dirname	original package library dir,
 #		not conforming lower case with version number
-proc ::kbs::config::Install-Libdir {dirname} {
+proc ::kbs::build::Install-Libdir {dirname} {
   variable verbose
   variable package
 
@@ -1076,7 +1067,7 @@ proc ::kbs::config::Install-Libdir {dirname} {
 # @param[in] name	name of vfs directory (without extension) to use
 # @param[in] args	additional args
 # SOURCE
-proc ::kbs::config::Install-Kit {name args} {
+proc ::kbs::build::Install-Kit {name args} {
   variable _
 
   set myTmp [file join [Get builddir] bin]
@@ -1132,7 +1123,7 @@ proc ::kbs::config::Install-Kit {name args} {
 # 
 # @param[in] pkgname	install name of package, if missing then build from [Get srcdir]
 # @param[in] subdir     source directory under [Get srcdir], default empty
-proc ::kbs::config::Install-Tcl {{pkgname {}} {subdir {}}} {
+proc ::kbs::build::Install-Tcl {{pkgname {}} {subdir {}}} {
   if {$pkgname eq {}} {
     set myDst [file join [Get builddir] lib [file tail [Get srcdir]]]
   } else {
@@ -1155,7 +1146,7 @@ proc ::kbs::config::Install-Tcl {{pkgname {}} {subdir {}}} {
 #-------------------------------------------------------------------------------
 
 ##	Command to install license file
-proc ::kbs::config::Install-License {path {name {}}} {
+proc ::kbs::build::Install-License {path {name {}}} {
 	if {$name eq {}} {
 		set name [file tail [Get makedir]]
 	}
@@ -1175,7 +1166,7 @@ proc ::kbs::config::Install-License {path {name {}}} {
 #		functions to help testing the current package
 #		Available functions are: 'Run', 'Get', 'Patch'
 #		'Kit name args' -- see Test-Kit()
-proc ::kbs::config::Test {script} {
+proc ::kbs::build::Test {script} {
   variable verbose
   variable interp
 
@@ -1183,7 +1174,7 @@ proc ::kbs::config::Test {script} {
   if {![file exist $myDir]} return
   puts "=== Test $myDir"
   if {$verbose} {puts $script}
-  interp alias $interp Kit {} ::kbs::config::Test-Kit
+  interp alias $interp Kit {} ::kbs::build::Test-Kit
   $interp eval [list cd $myDir]
   $interp eval $script
   foreach my {Kit} {interp alias $interp $my}
@@ -1198,7 +1189,7 @@ proc ::kbs::config::Test {script} {
 # 
 # @param[in] name	name of vfs directory (without extension) to use
 # @param[in] args	additional args
-proc ::kbs::config::Test-Kit {name args} {
+proc ::kbs::build::Test-Kit {name args} {
   variable _
 
   set myExe [file join [Get builddir] bin $name]
@@ -1218,7 +1209,7 @@ proc ::kbs::config::Test-Kit {name args} {
 # @param[in] script	tcl script to evaluate with one or more of the following
 #		functions to help cleaning the current package.
 #		Available functions are: 'Run', 'Get', 'Patch'
-proc ::kbs::config::Clean {script} {
+proc ::kbs::build::Clean {script} {
   variable verbose
   variable interp
 
@@ -1238,7 +1229,7 @@ proc ::kbs::config::Clean {script} {
 # @synopsis{Get var}
 #
 # @param[in] var	name of variable.
-proc ::kbs::config::Get {var} {
+proc ::kbs::build::Get {var} {
   variable _
 
   if {[string index $var 0] eq {-}} {
@@ -1297,7 +1288,7 @@ proc ::kbs::config::Get {var} {
 #     - lineoffset	start point of patch, first line is 1
 #     - oldtext		part of file to replace
 #     - newtext		replacement text
-proc ::kbs::config::Patch {file lineoffset oldtext newtext} {
+proc ::kbs::build::Patch {file lineoffset oldtext newtext} {
   variable verbose
 
   set myFd [open $file r]
@@ -1345,7 +1336,7 @@ proc ::kbs::config::Patch {file lineoffset oldtext newtext} {
 #
 # @param[in] patch	contents of patchfile
 # @param[in] options	options for patch command
-proc ::kbs::config::Patchexec {patch args} {
+proc ::kbs::build::Patchexec {patch args} {
   variable _
   variable verbose
 
@@ -1375,7 +1366,7 @@ proc ::kbs::config::Patchexec {patch args} {
 # @param[in] striplevel number of path elements to be removed from the diff header
 # @param[in] patch      output of diff -ru
 
-proc ::kbs::config::PatchFile {striplevel patchfile} {
+proc ::kbs::build::PatchFile {striplevel patchfile} {
 	set dir [Get srcdir]
 	set fd [open [file join [Get basedir] $patchfile]]
 	fconfigure $fd -encoding binary
@@ -1383,7 +1374,7 @@ proc ::kbs::config::PatchFile {striplevel patchfile} {
 	close $fd
 }
 
-proc ::kbs::config::PatchApply {dir striplevel patch} {
+proc ::kbs::build::PatchApply {dir striplevel patch} {
 	set patchlines [split $patch \n]
 	set inhunk false
 	set oldcode {}
@@ -1524,7 +1515,7 @@ proc ::kbs::config::PatchApply {dir striplevel patch} {
 # @synopsis{Run args}
 #
 # @param[in] args	containing external command
-proc ::kbs::config::Run {args} {
+proc ::kbs::build::Run {args} {
   variable _
   variable verbose
   if {[info exists _(exec-[lindex $args 0])]} {
@@ -1549,7 +1540,7 @@ proc ::kbs::config::Run {args} {
 ##	Configure application with given command line arguments.
 #
 # @param[in] args	option list
-proc ::kbs::config::_configure {args} {
+proc ::kbs::build::_configure {args} {
   variable maindir
   variable pkgfile
   variable ignore
@@ -1695,7 +1686,7 @@ source kbs-pkg-db.tcl
 # @param[in] argv	list of provided command line arguments
 proc ::kbs_main {argv} {
   # parse options
-  if {[catch {::kbs::config::_configure {*}$argv} argv]} {
+  if {[catch {::kbs::build::_configure {*}$argv} argv]} {
     puts stderr "Option error (try './kbs.tcl' to get brief help): $argv"
     exit 1
   }

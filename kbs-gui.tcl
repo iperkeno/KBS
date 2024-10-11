@@ -30,19 +30,19 @@ proc ::kbs::gui::_init {args} {
 
   grid [::ttk::label $w.1 -anchor e -text {-pkgfile=}]\
 	-row 1 -column 1 -sticky ew
-  grid [::ttk::label $w.2 -anchor w -relief ridge -textvariable ::kbs::config::pkgfile]\
+  grid [::ttk::label $w.2 -anchor w -relief ridge -textvariable ::kbs::build::pkgfile]\
 	-row 1 -column 2 -sticky ew
 
   grid [::ttk::label $w.4 -anchor e -text {-builddir=}]\
 	-row 2 -column 1 -sticky ew
-  grid [::ttk::label $w.5 -anchor w -relief ridge -textvariable ::kbs::config::_(builddir)]\
+  grid [::ttk::label $w.5 -anchor w -relief ridge -textvariable ::kbs::build::_(builddir)]\
 	-row 2 -column 2 -sticky ew
   grid [::ttk::button $w.6 -width 3 -text {...} -command {::kbs::gui::_set_builddir} -padding 0]\
 	-row 2 -column 3 -sticky ew
 
   grid [::ttk::label $w.7 -anchor e -text {-CC=}]\
 	-row 3 -column 1 -sticky ew
-  grid [::ttk::entry $w.8 -textvariable ::kbs::config::_(CC)]\
+  grid [::ttk::entry $w.8 -textvariable ::kbs::build::_(CC)]\
 	-row 3 -column 2 -sticky ew
   grid [::ttk::button $w.9 -width 3 -text {...} -command {::kbs::gui::_set_exec CC {Select C-compiler}} -padding 0]\
 	-row 3 -column 3 -sticky ew
@@ -50,12 +50,12 @@ proc ::kbs::gui::_init {args} {
 
   set myRow 3
   set myW 9
-  foreach myCmd [lsort [array names ::kbs::config::_ exec-*]] {
+  foreach myCmd [lsort [array names ::kbs::build::_ exec-*]] {
     set myCmd [string range $myCmd 5 end]
     incr myRow
     grid [::ttk::label $w.[incr myW] -anchor e -text "-${myCmd}="]\
 	-row $myRow -column 1 -sticky ew
-    grid [::ttk::entry $w.[incr myW] -textvariable ::kbs::config::_(exec-$myCmd)]\
+    grid [::ttk::entry $w.[incr myW] -textvariable ::kbs::build::_(exec-$myCmd)]\
 	-row $myRow -column 2 -sticky ew
     lappend _(widgets) $w.$myW
     grid [::ttk::button $w.[incr myW] -width 3 -text {...} -command "::kbs::gui::_set_exec exec-${myCmd} {Select '${myCmd}' program}" -padding 0]\
@@ -71,11 +71,11 @@ proc ::kbs::gui::_init {args} {
   grid columnconfigure $w 2 -weight 1
   grid columnconfigure $w 3 -weight 1
 
-  grid [::ttk::checkbutton $w.1 -text -ignore -onvalue 1 -offvalue 0 -variable ::kbs::config::ignore]\
+  grid [::ttk::checkbutton $w.1 -text -ignore -onvalue 1 -offvalue 0 -variable ::kbs::build::ignore]\
 	-row 1 -column 1 -sticky ew
-  grid [::ttk::checkbutton $w.2 -text -recursive -onvalue 1 -offvalue 0 -variable ::kbs::config::recursive]\
+  grid [::ttk::checkbutton $w.2 -text -recursive -onvalue 1 -offvalue 0 -variable ::kbs::build::recursive]\
 	-row 1 -column 2 -sticky ew
-  grid [::ttk::checkbutton $w.3 -text -verbose -onvalue 1 -offvalue 0 -variable ::kbs::config::verbose]\
+  grid [::ttk::checkbutton $w.3 -text -verbose -onvalue 1 -offvalue 0 -variable ::kbs::build::verbose]\
 	-row 1 -column 3 -sticky ew
 
   lappend _(widgets) $w.1 $w.2 $w.3
@@ -95,8 +95,8 @@ proc ::kbs::gui::_init {args} {
 	-row $r -column [incr c] -sticky ew
     grid [::ttk::checkbutton $w.[incr i] -width 17\
 	-onvalue --enable$myOpt -offvalue --disable$myOpt\
-	-variable ::kbs::config::_($myOpt)\
-	-textvariable ::kbs::config::_($myOpt)]\
+	-variable ::kbs::build::_($myOpt)\
+	-textvariable ::kbs::build::_($myOpt)]\
 	-row $r -column [incr c] -sticky ew
     lappend _(widgets) $w.$i
     if {$c >= 4} {
@@ -113,11 +113,11 @@ proc ::kbs::gui::_init {args} {
 
   grid [::ttk::label $w.1 -text {'kit'} -anchor e]\
 	-row 1 -column 1 -sticky ew
-  grid [::ttk::combobox $w.2 -state readonly -textvariable ::kbs::config::_(kit) -values {mk-cli mk-dyn mk-gui mk-bi {mk-cli mk-dyn mk-gui} vq-cli vq-dyn vq-gui vq-bi {vq-cli vq-dyn vq-gui} {mk-cli mk-dyn mk-gui vq-cli vq-dyn vq-gui}}]\
+  grid [::ttk::combobox $w.2 -state readonly -textvariable ::kbs::build::_(kit) -values {mk-cli mk-dyn mk-gui mk-bi {mk-cli mk-dyn mk-gui} vq-cli vq-dyn vq-gui vq-bi {vq-cli vq-dyn vq-gui} {mk-cli mk-dyn mk-gui vq-cli vq-dyn vq-gui}}]\
 	-row 1 -column 2 -sticky ew
   grid [::ttk::label $w.3 -text -bi= -anchor e]\
 	-row 2 -column 1 -sticky ew
-  grid [::ttk::entry $w.4 -textvariable ::kbs::config::_(bi)]\
+  grid [::ttk::entry $w.4 -textvariable ::kbs::build::_(bi)]\
 	-row 2 -column 2 -sticky ew
   grid [::ttk::button $w.5 -text {set '-bi' with selected packages} -command {::kbs::gui::_set_bi} -padding 0]\
 	-row 3 -column 2 -sticky ew
@@ -131,7 +131,7 @@ proc ::kbs::gui::_init {args} {
 
   grid [::listbox $w.lb -yscrollcommand "$w.2 set" -selectmode extended]\
 	-row 1 -column 1 -sticky nesw
-  eval $w.lb insert end [lsort -dict [array names ::kbs::config::packages]]
+  eval $w.lb insert end [lsort -dict [array names ::kbs::build::packages]]
   grid [::ttk::scrollbar $w.2 -orient vertical -command "$w.lb yview"]\
 	-row 1 -column 2 -sticky ns
 
@@ -181,7 +181,7 @@ proc ::kbs::gui::_init {args} {
   grid [::ttk::label $w.3_2 -anchor w -relief sunken -textvariable ::kbs::gui::_(-running) -wraplength 300]\
 	-row 3 -column 2 -sticky ew
 
-  wm title . [::kbs::config::Get application]
+  wm title . [::kbs::build::Get application]
   wm protocol . WM_DELETE_WINDOW {exit}
   wm deiconify .
 }
@@ -190,11 +190,11 @@ proc ::kbs::gui::_init {args} {
 ##	Set configuration variable 'builddir'.
 proc ::kbs::gui::_set_builddir {} {
   set myDir [tk_chooseDirectory -parent . -title "Select 'builddir'"\
-	-initialdir $::kbs::config::_(builddir)]
+	-initialdir $::kbs::build::_(builddir)]
   if {$myDir eq {}} return
   file mkdir [file join $myDir bin]
-  set ::kbs::config::_(builddir) $myDir
-  set ::kbs::config::_(builddir-sys) [::kbs::config::_sys $myDir]
+  set ::kbs::build::_(builddir) $myDir
+  set ::kbs::build::_(builddir-sys) [::kbs::build::_sys $myDir]
 }
 #-------------------------------------------------------------------------------
 
@@ -204,9 +204,9 @@ proc ::kbs::gui::_set_builddir {} {
 # @param[in] title	text to display as title of selection window
 proc ::kbs::gui::_set_exec {varname title} {
   set myFile [tk_getOpenFile -parent . -title $title\
-	-initialdir [file dirname $::kbs::config::_($varname)]]
+	-initialdir [file dirname $::kbs::build::_($varname)]]
   if {$myFile eq {}} return
-  set ::kbs::config::_($varname) $myFile
+  set ::kbs::build::_($varname) $myFile
 }
 #-------------------------------------------------------------------------------
 
@@ -216,7 +216,7 @@ proc ::kbs::gui::_set_bi {} {
   foreach myNr [.pkg.lb curselection] {
     lappend my [.pkg.lb get $myNr]
   }
-  set ::kbs::config::_(bi) $my
+  set ::kbs::build::_(bi) $my
 }
 #-------------------------------------------------------------------------------
 

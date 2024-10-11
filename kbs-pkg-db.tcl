@@ -1,5 +1,5 @@
 # begin of Tcl/Tk Pakages DB
-namespace eval ::kbs::config {
+namespace eval ::kbs::build {
 # @{
 ## @defgroup __
 #@verbatim
