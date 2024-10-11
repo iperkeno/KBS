@@ -167,8 +167,6 @@ proc ::kbs::display-config {} {
 #===============================================================================
 source kbs-gui.tcl
 
-#===============================================================================
-
 ##	Start graphical user interface.
 # @examples
 # @call{simple start with default options,./kbs.tcl gui}
@@ -1687,7 +1685,7 @@ proc ::kbs::config::_configure {args} {
 
 #===============================================================================
 
-source kbs-config.tcl
+source kbs-pkg-db.tcl
 
 #===============================================================================
 
