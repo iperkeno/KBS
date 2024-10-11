@@ -2,16 +2,19 @@
 
 ## *config* and *configure*
 
-The use of two terms *config* and *configure* makes the read of code confusing.
-The idea is to substitute the term *config* with *setup*
+The use of two terms *config* and *configure* makes the read of code confusing as for the function:
+```tcl
+proc ::kbs::config::Configure-Config { }
+```
+The idea is to substitute the term *config* with *build* in some cases or *setup* in others. 
 
 
 ## variable *packages*
 
 the function:
-
-         proc ::kbs::config::Package {name script} 
-
+```tcl
+proc ::kbs::config::Package {name script} 
+```
 populate the *packages* variable
 
 
