@@ -1704,26 +1704,26 @@ proc ::kbs_main {argv} {
 
 
   # try to execute command
-  set myCmd [lindex $argv 0]
+  set cmd [lindex $argv 0]
 
-  if {[info commands ::kbs::$myCmd] ne ""} {
-    if {[catch {::kbs::$myCmd {*}[lrange $argv 1 end]} myMsg]} {
-      puts stderr "Error in execution of '$myCmd [lrange $argv 1 end]':\n$myMsg"
+  if {[info commands ::kbs::$cmd] ne ""} {
+    if {[catch {::kbs::$cmd {*}[lrange $argv 1 end]} ErrMsg]} {
+      puts stderr "Error in execution of '$cmd [lrange $argv 1 end]':\n$ErrMsg"
       exit 1
     }
-    if {$myCmd != "gui"} {
+    if {$cmd != "gui"} {
       exit 0
     }
-  } elseif {$myCmd eq {}} {
+  } elseif {$cmd eq {}} {
     ::kbs::help
     exit 0
   } else {
     set myList {}
     #lists all commands in namespace'::kbs'
-    foreach myKnownCmd [lsort [info commands ::kbs::*]] { 
-      lappend myList [namespace tail $myKnownCmd]
+    foreach KnownCmd [lsort [info commands ::kbs::*]] { 
+      lappend CmdList [namespace tail $KnownCmd]
     }
-    puts stderr "'$myCmd' not found, should be one of: [join $myList {, }]"
+    puts stderr "'$cmd' not found, should be one of: [join $CmdList {, }]"
     exit 1
   }
 }
