@@ -1697,10 +1697,12 @@ source kbs-config.tcl
 # @param[in] argv	list of provided command line arguments
 proc ::kbs_main {argv} {
   # parse options
-  if {[catch {set argv [::kbs::config::_configure {*}$argv]} myMsg]} {
-    puts stderr "Option error (try './kbs.tcl' to get brief help): $myMsg"
+  if {[catch {::kbs::config::_configure {*}$argv} argv]} {
+    puts stderr "Option error (try './kbs.tcl' to get brief help): $argv"
     exit 1
   }
+
+
   # try to execute command
   set myCmd [lindex $argv 0]
 
