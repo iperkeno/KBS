@@ -101,7 +101,9 @@ namespace eval ::kbs {
 }
 #-------------------------------------------------------------------------------
 
-source kbs-license.tcl    ;# load KBS license definition
+#source kbs-license.tcl    ;# load KBS license definition
+set ::kbs(license) [read [open "kbs-license" r]]
+
 
 ##	Display license information.
 # @examples
