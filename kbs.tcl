@@ -420,7 +420,7 @@ namespace eval ::kbs::build {
   set _(kitdyn)		    {}
   set _(kitgui)       {}
   set _(kit)		      [list];# list of interpreters to build
-  set _(bi)		        [list];# list of packages for batteries included interpreter builds
+  set _(bi)		        [list];# list of packages for batteries included builds
   set _(staticstdcpp)	1;# build with static libstdc++
   set _(makedir)	    {};# package specific build dir
   set _(makedir-sys)	{};# package and system specific build dir
@@ -441,15 +441,25 @@ proc ::kbs::build::_sys {file} {
     return $file
   }
 }
+
+##  Not used
+proc ::kbs::build::nativepath {p} {
+	variable _
+	if {$_(sys) eq "win"} {
+		return [exec cygpath -w $p]
+	} else {
+		return $p
+	}
+}
+
 #-------------------------------------------------------------------------------
 
-##	Initialize variables with respect to given configuration options
-#	and command.
+## Initialize variables with respect to given configuration options and commands.
 #	Process command in separate interpreter.
 #
 # @param[in] used	list of available commands
 # @param[in] list	list of packages
-proc ::kbs::build::_init {used list} {
+proc ::kbs::build::_init {used pck_list} {
   variable packages
   variable package
   variable ignore
@@ -461,7 +471,7 @@ proc ::kbs::build::_init {used list} {
   array unset _ TCL_*
   array unset _ TK_*
 
-  # create interpreter with commands
+  # create interpreter with used commands, not used are void functions.
   lappend used Run Get Patch PatchFile
   set interp [interp create]
   foreach myProc [namespace export] {
@@ -472,7 +482,7 @@ proc ::kbs::build::_init {used list} {
     }
   }
   # now process command
-  foreach myPattern $list {
+  foreach myPattern $pck_list {
     set myTargets [array names packages $myPattern]
     if {[llength $myTargets] == 0} {
       return -code error "no targets found for pattern: '$myPattern'"
@@ -484,7 +494,7 @@ proc ::kbs::build::_init {used list} {
       if {[catch {$interp eval $packages($package)} myMsg]} {
         if {$ignore == 0} {
           interp delete $interp
-	  set interp {}
+	        set interp {}
           return -code error "=== Package failed for: $package\n$myMsg"
         }
         puts "=== Package error: $myMsg"
@@ -706,7 +716,7 @@ proc ::kbs::build::Source- {type args} {
         if {$args eq {}} { set args [file tail $myPath] }
         if {[string first @ $myPath] < 0} {set myPath :pserver:anonymous@$myPath}
         puts "=== Source $type $package"
-	if {[catch {Run $_(exec-cvs) -d $myPath -z3 co -P -d $package {*}$args} myMsg]} {
+	      if {[catch {Run $_(exec-cvs) -d $myPath -z3 co -P -d $package {*}$args} myMsg]} {
           file delete -force $myDir
           if {$verbose} {puts $myMsg}
         }
@@ -853,15 +863,6 @@ proc ::kbs::build::Configure {script} {
   foreach my {Config Kit} {interp alias $interp $my}
 }
 
-proc ::kbs::build::nativepath {p} {
-	variable _
-	if {$_(sys) eq "win"} {
-		return [exec cygpath -w $p]
-	} else {
-		return $p
-	}
-}
-
 #-------------------------------------------------------------------------------
 ##	Call 'configure' with options.
 # @examples
@@ -958,8 +959,8 @@ proc ::kbs::build::Make {script} {
 
 ##	The procedure links the 'name.vfs' in to the 'makedir' and create
 #	foreach name in 'args' a link from 'builddir'/lib in to 'name.vfs'/lib.
-#	The names in 'args' may subdirectories under 'builddir'/lib. In the
-#	'name.vfs'/lib the leading directory parts are removed.
+#	The names in 'args' may subdirectories under 'builddir'/lib. 
+#	In the 'name.vfs'/lib the leading directory parts are removed.
 #	The same goes for 'name.vfs'.
 #	- Kit name ?librarydir ..?
 #	  Start in 'makedir'. Create 'name.vfs/lib'.
@@ -970,7 +971,6 @@ proc ::kbs::build::Make {script} {
 # @examples
 #	Package tksqlite0.5.8 ..
 # 
-#
 # @param[in] name	name of vfs directory (without extension) to use
 # @param[in] args	additional args
 proc ::kbs::build::Make-Kit {name args} {
@@ -1678,7 +1678,6 @@ proc ::kbs::build::_configure {args} {
 source kbs-pkg-db.tcl
 
 #===============================================================================
-
 ##	Parse the command line in search of options.
 #	Process the command line to call one of the '::kbs::*' functions
 #

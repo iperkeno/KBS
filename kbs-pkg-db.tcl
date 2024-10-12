@@ -117,9 +117,7 @@ Package icons2.0 {
 #@verbatim
 Package img1.4.3 {
   Source {Svn https://svn.code.sf.net/p/tkimg/code/trunk -r 374}
-  Configure {
-        Config [Get srcdir-sys]
-  }
+  Configure {Config [Get srcdir-sys]}
   Make {Run make collate}
   Install {
     Run make install-libraries
@@ -129,9 +127,7 @@ Package img1.4.3 {
 }
 Package img1.4.6 {
   Source {Svn https://svn.code.sf.net/p/tkimg/code/trunk -r 410}
-  Configure {
-    Config [Get srcdir-sys]
-  }
+  Configure {Config [Get srcdir-sys]}
   Make {Run make collate}
   Install {
     Run make install-libraries
@@ -381,9 +377,8 @@ Package nsf2.0.0 {
   Source {Wget http://prdownloads.sourceforge.net/next-scripting/nsf2.0.0.tar.gz}
   Configure {
     Patch [Get srcdir]/Makefile.in 213 \
-{INCLUDES	= @PKG_INCLUDES@ @TCL_INCLUDES@ @NSF_BUILD_INCLUDE_SPEC@
-} "INCLUDES	= @PKG_INCLUDES@ @TCL_INCLUDES@ @NSF_BUILD_INCLUDE_SPEC@ -I@TCL_SRC_DIR@/generic -I[Get srcdir-sys]/generic
-"
+    {INCLUDES	= @PKG_INCLUDES@ @TCL_INCLUDES@ @NSF_BUILD_INCLUDE_SPEC@} \ 
+    "INCLUDES	= @PKG_INCLUDES@ @TCL_INCLUDES@ @NSF_BUILD_INCLUDE_SPEC@ -I@TCL_SRC_DIR@/generic -I[Get srcdir-sys]/generic"
     Config [Get srcdir-sys]
   }
   Make {
@@ -764,9 +759,7 @@ Package tklib0.6 {
 Package tksqlite0.5.13 {
   Require {Use kbskit8.6 sdx.kit tktable2.10 treectrl2.4.1 img1.4.6}
   Source {Wget http://reddog.s35.xrea.com/software/tksqlite-0.5.13.tar.gz}
-  Configure {
-    Kit {source $::starkit::topdir/tksqlite.tcl} Tk
-  }
+  Configure {Kit {source $::starkit::topdir/tksqlite.tcl} Tk }
   Make {Kit tksqlite sqlite3.44.2 tktable2.10 treectrl2.4.1 img1.4.6}
   Install {Kit tksqlite -vq-gui}
   Clean {file delete -force tksqlite.vfs}
