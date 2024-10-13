@@ -195,6 +195,8 @@ Wget https://chiselapp.com/user/rene/repository/iwidgets/iwidgets.tgz?uuid=66a05
 }
 #@endverbatim
 ## @defgroup kbskit
+# BASEKIT source code
+# TODO: the CVS repository is broken, the code is added manually in /sources
 #@verbatim
 Package kbskit0.4 {
   Source {Cvs kbskit.cvs.sourceforge.net:/cvsroot/kbskit -r kbskit_0_4 kbskit}
