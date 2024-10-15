@@ -918,15 +918,15 @@ proc ::kbs::build::Configure-Kit {maincode args} {
   # build standard 'main.tcl'
   set myFd [open main.tcl w]
   puts $myFd {#!/usr/bin/env tclkit
-# startup
-if {[catch {
-  package require starkit
-  if {[starkit::startup] eq "sourced"} return
-}]} {
-  namespace eval ::starkit { variable topdir [file dirname [info script]] }
-  set auto_path [linsert $auto_path 0 [file join $::starkit::topdir lib]]
-}
-# used packages};# end of puts
+  # startup
+    if {[catch {
+      package require starkit
+      if {[starkit::startup] eq "sourced"} return
+        }]} {
+          namespace eval ::starkit { variable topdir [file dirname [info script]] }
+          set auto_path [linsert $auto_path 0 [file join $::starkit::topdir lib]]
+    }
+  # used packages};# end of puts
   foreach myPkg $args {
     puts $myFd "package require $myPkg"
   }
