@@ -96,7 +96,7 @@ set ::kbs(version) {0.4.9};# current version and version of used kbskit
 
 ##	This namespace contain the external callable functions.
 namespace eval ::kbs {
-  namespace export help version kbs list info gui
+  namespace export help version kbs list gui
   namespace export require source configure make install clean distclean
 }
 #-------------------------------------------------------------------------------
@@ -244,7 +244,7 @@ proc ::kbs::sources {args} {
 # @call{configure the package and its dependencies,./kbs.tcl -r configure kbskit8.5}
 # 
 # @param[in] args	list of packages
-proc ::kbs::buildure {args} {
+proc ::kbs::configure {args} {
   ::kbs::build::_init {Require Source Configure} $args
 }
 #-------------------------------------------------------------------------------
