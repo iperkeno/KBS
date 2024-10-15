@@ -9,3 +9,5 @@
   - rename proc ::kbs::config to ::kbs::display-config, modified the help content.
   - refactoring kbs::config to kbs::build 
   - removed *tdbc1.1.7 sqlite3.44.2 tdbcmysql1.1.7 tdbcodbc1.1.7 tdbcpostgres1.1.7* from default build of kbskit8.6
+  - added *--disable-stubs -with-tcl8* to Package vfs1.4.2
+  - updated kbskit make with vfs1.4.2

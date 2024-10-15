@@ -257,7 +257,7 @@ Package kbskit8.5 {
 Package kbskit8.6 {
   Require {
     Use kbskit0.4 sdx.kit
-    Use tk8.6-static tk8.6 vfs1.4-static {*}[Get bi]
+    Use tk8.6-static tk8.6 vfs1.4.2-static {*}[Get bi]
     if {[lsearch -glob [Get kit] {vq*}] != -1} { Use vqtcl4.1-static }
     if {[lsearch -glob [Get kit] {mk*}] != -1} { Use mk4tcl2.4.9.7-static}
   }
@@ -282,12 +282,12 @@ Package kbskit8.6 {
     }
     if {$::tcl_platform(platform) == "windows"} {
       set MYCLI "[Get builddir-sys]/lib/libtcl86s.a"
-      append MYCLI " [Get builddir-sys]/lib/vfs1.4.1/vfs141.a"
+      append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/vfs141.a"
       set MYGUI "[Get builddir-sys]/lib/libtk86s.a"
       set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/vqtcl41.a [Get builddir-sys]/lib/libtclstub86s.a"
     } else {
       set MYCLI "[Get builddir-sys]/lib/libtcl8.6.a"
-      append MYCLI " [Get builddir-sys]/lib/vfs1.4.1/libvfs1.4.1.a"
+      append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs1.4.2.a"
       set MYGUI "[Get builddir-sys]/lib/libtk8.6.a"
       set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a [Get builddir-sys]/lib/libtclstub8.6.a"
     }
@@ -885,7 +885,7 @@ Package udp1.0.11 {
 Package vfs1.4.2 {
   Source {Wget https://core.tcl-lang.org/tclvfs/zip/8cdab08997/tclvfs-8cdab08997.zip}
   Configure {
-    Config [Get srcdir-sys] --with-tclinclude=[Get builddir-sys]/include
+    Config [Get srcdir-sys] --disable-stubs --with-tcl8 --with-tclinclude=[Get builddir-sys]/include
   }
   Make {Run make}
   Install {Run make install-binaries}
@@ -895,13 +895,11 @@ Package vfs1.4.2 {
 Package vfs1.4.2-static {
   Source {Link vfs1.4.2}
   Configure {
-    Config [Get srcdir-sys] --disable-shared --with-tclinclude=[Get builddir-sys]/include}
+    Config [Get srcdir-sys] --disable-shared --disable-stubs -with-tcl8 --with-tclinclude=[Get builddir-sys]/include}
   Make {Run make}
   Install {Run make install-binaries}
   Clean {Run make clean}
 }
-
-
 
 #@endverbatim
 ## @defgroup vfs
