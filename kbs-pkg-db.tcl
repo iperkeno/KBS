@@ -292,11 +292,11 @@ Package kbskit8.6 {
       set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a [Get builddir-sys]/lib/libtclstub8.6.a"
     }
     if {[Get -threads] in {--enable-threads --enable-threads=yes {}}} {
-      set MYKITVQ "thread2.8.9 tdbc1.1.7 itcl4.2.4 sqlite3.44.2 tdbcmysql1.1.7 tdbcodbc1.1.7 tdbcpostgres1.1.7"
-      set MYKITMK "thread2.8.9 tdbc1.1.7 itcl4.2.4 sqlite3.44.2 tdbcmysql1.1.7 tdbcodbc1.1.7 tdbcpostgres1.1.7"
+      set MYKITVQ "thread2.8.9 itcl4.2.4"
+      set MYKITMK "thread2.8.9 itcl4.2.4"
     } else {
-      set MYKITVQ "tdbc1.1.7 itcl4.2.4 sqlite3.44.2 tdbcmysql1.1.7 tdbcodbc1.1.7 tdbcpostgres1.1.7"
-      set MYKITMK "tdbc1.1.7 itcl4.2.4 sqlite3.44.2 tdbcmysql1.1.7 tdbcodbc1.1.7 tdbcpostgres1.1.7"
+      set MYKITVQ "itcl4.2.4"
+      set MYKITMK "itcl4.2.4"
     }
     foreach my [Get kit] {
       Run make MYCLI=$MYCLI MYGUI=$MYGUI MYVQ=$MYVQ MYKITVQ=$MYKITVQ MYMK=$MYMK MYKITMK=$MYKITMK MYKITBI=[Get bi] all-$my
