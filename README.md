@@ -26,7 +26,3 @@ MAKEFLAGS=-j4 tclsh ./kbs.tcl -v -builddir=buildLinux -r -mk-bi -bi="tk8.6 tls1.
 
 ## README for previous Revision 
 [RADME.0.4.8](./README.0.4.8)
-
-
-
-
