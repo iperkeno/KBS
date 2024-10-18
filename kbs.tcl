@@ -30,7 +30,7 @@
 #
 # @examples
 # @call{get brief help text,./kbs.tcl
-#tclsh ./kbs.tcl}
+# tclsh ./kbs.tcl}
 # @call{get full documentation in ./doc/kbs.html,./kbs.tcl doc}
 # @call{start in graphical mode,./kbs.tcl gui}
 # @call{build batteries included kbskit interpreter,./kbs.tcl -r -vq-bi install kbskit8.5}
@@ -434,7 +434,7 @@ namespace eval ::kbs::build {
 }   ;# end of ::kbs::build
 #-------------------------------------------------------------------------------
 
-##	Return platfrom specific file name p.e. windows C:\... -> /...
+##	Return host platfrom specific file name p.e. windows C:\... -> /...
 # @param[in] file	file name to convert
 proc ::kbs::build::_sys {file} {
   if {$::tcl_platform(platform) eq {windows} && [string index $file 1] eq {:}} {
