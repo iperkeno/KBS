@@ -1,4 +1,5 @@
-#! /bin/sh
+#! /bin/bash
+
 ##
 # @file kbs.tcl
 #	Kitgen Build System
