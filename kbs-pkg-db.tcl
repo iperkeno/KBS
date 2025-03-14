@@ -135,6 +135,19 @@ Package img1.4.6 {
   }
   Clean {Run make clean}
 }
+
+Package img2.0.1 {
+  Source {Wget https://sourceforge.net/projects/tkimg/files/tkimg/2.0/tkimg%202.0.1/Img-2.0.1.tar.gz/download}
+  Configure {Config [Get srcdir-sys]}
+  Make {Run make collate}
+  Install {
+    Run make install-libraries
+    Libdir Img1.4.6
+  }
+  Clean {Run make clean}
+}
+
+
 #@endverbatim
 ## @defgroup itcl
 #@verbatim
