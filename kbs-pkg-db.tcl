@@ -932,7 +932,7 @@ Package vfs1.4.2 {
 Package vfs1.4.2-static {
   Source {Link vfs1.4.2}
   Configure {
-    Config [Get srcdir-sys] --disable-shared --disable-stubs -with-tcl8 --with-tclinclude=[Get builddir-sys]/include }
+    Config [Get srcdir-sys] --disable-shared --disable-stubs -with-tcl8 --with-tclinclude=[Get builddir-sys]/include}
   Make {Run make}
   Install {Run make install-binaries}
   Clean {Run make clean}
@@ -957,7 +957,7 @@ Package vfs1.4 {
 Package vfs1.4-static {
   Source {Link vfs1.4}
   Configure {
-    Config [Get srcdir-sys] --with-tclinclude=[Get builddir-sys]/include --disable-shared }
+    Config [Get srcdir-sys] --disable-shared --with-tclinclude=[Get builddir-sys]/include}
   Make {Run make}
   Install {Run make install-binaries}
   Clean {Run make clean}
@@ -1039,8 +1039,7 @@ Package zlib1.2.8-static {
     if {$::tcl_platform(platform) eq {windows}} {
       Run env BINARY_PATH=[Get builddir]/bin INCLUDE_PATH=[Get builddir]/include LIBRARY_PATH=[Get builddir]/lib make -fwin32/Makefile.gcc
     } else {
-      # Run make
-      Run env BINARY_PATH=[Get builddir]/bin INCLUDE_PATH=[Get builddir]/include LIBRARY_PATH=[Get builddir]/lib make -fwin32/Makefile.gcc
+      Run make
     }
   }
   Install {
