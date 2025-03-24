@@ -909,6 +909,8 @@ proc ::kbs::build::Configure-Config {path args} {
   #TODO CFLAGS
   Run env CC=[Get CC] TCLSH_PROG=[Get builddir-sys]/bin/tclsh85 WISH_PROG=[Get builddir-sys]/bin/wish $path/configure {*}$myOpts {*}$args
 }
+
+#-------------------------------------------------------------------------------
 ##	This function create a 'makedir'/main.tcl with:
 #	- common startup code
 #	- require statement for each package in 'args' argument
@@ -1008,8 +1010,8 @@ proc ::kbs::build::Make-Kit {name args} {
 	[file join $myVfs lib [file tail $myPath]]
   }
 }
-#-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
 ##	Eval script in 'makedir'.
 # @synopsis{Install script}
 #
@@ -1036,8 +1038,8 @@ proc ::kbs::build::Install {script} {
   $interp eval $script
   foreach my {Kit Tcl Libdir License} {interp alias $interp $my}
 }
-#-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
 ##	Move given 'dir' in 'builddir'tcl/lib to package name.
 #	This function is necessary to install all packages with the same
 #	naming convention (lower case name plus version number).
@@ -1672,7 +1674,7 @@ proc ::kbs::build::_configure {args} {
   set _(builddir-sys) [_sys $_(builddir)]
   puts "=========== builddir: $_(builddir)	"
   set _(kit) [lsort -unique $_(kit)];# all options only once
-  if {$_(kit) eq {}} {set _(kit) {vq-cli vq-dyn vq-gui}};# default setting
+  if {$_(kit) eq {}} {set _(kit) {mk-cli mk-dyn mk-gui}};# default setting
   foreach my {cli dyn gui} {;# default settings
     if {$_(kit$my) eq {}} {
       set _(kit$my) [lindex [lsort [glob -nocomplain [file join $_(builddir) bin kbs*${my}*]]] 0]
