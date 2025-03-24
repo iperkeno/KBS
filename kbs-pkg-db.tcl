@@ -533,9 +533,7 @@ Package tablelist6.21 {
   Configure {}
   Install {Tcl}
 }
-#@endverbatim
-## @defgroup tcl
-#@verbatim
+
 Package tcl8.5 {
   Source {Wget http://prdownloads.sourceforge.net/tcl/tcl8.5.19-src.tar.gz}
   Configure {Config [Get srcdir-sys]/[Get target-sys]}
@@ -544,9 +542,7 @@ Package tcl8.5 {
   Clean {Run make clean}
   Test {Run make test}
 }
-#@endverbatim
-## @defgroup tcl
-#@verbatim
+
 Package tcl8.5-static {
   Source {Link tcl8.5}
   Configure {Config [Get srcdir-sys]/[Get target-sys] --disable-shared}
@@ -555,9 +551,7 @@ Package tcl8.5-static {
   Clean {Run make clean}
   Test {Run make test}
 }
-#@endverbatim
-## @defgroup tcl
-#@verbatim
+
 Package tcl8.6 {
   Source {Wget https://sourceforge.net/projects/tcl/files/Tcl/8.6.14/tcl8.6.14-src.tar.gz}
   Configure {Config [Get srcdir-sys]/[Get target-sys] }
@@ -566,17 +560,15 @@ Package tcl8.6 {
   Clean {Run make clean}
   Test {Run make test}
 }
-#@endverbatim
-## @defgroup tcl
-#@verbatim
+
 Package tcl8.6-static {
   Source {Link tcl8.6}
-  Configure {Config [Get srcdir-sys]/[Get sys]  --disable-shared}
+  Configure {Config [Get srcdir-sys]/[Get target-sys] --disable-shared}
   Make {Run make}
   Install {
     Run make install install-private-headers
 #TODO siehe kbskit8.6
-    if {[Get sys] eq {win}} {
+    if {[Get target-sys] eq {win}} {
       file copy -force [Get builddir]/tcl8.6-static/libtclstub86.a [Get builddir]/lib/libtclstub86s.a
       file copy -force [Get builddir]/tcl8.6-static/libtcl86.a [Get builddir]/lib/libtcl86s.a
     }
@@ -584,6 +576,8 @@ Package tcl8.6-static {
   Clean {Run make clean}
   Test {Run make test}
 }
+
+
 #@endverbatim
 ## @defgroup tcllib
 #@verbatim
