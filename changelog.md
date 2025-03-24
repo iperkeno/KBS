@@ -2,6 +2,10 @@
 
 ## V 0.4.9
 
+[20250321] 
+  - added command "target-sys" to specify buid target: unix/win, default is _(sys)
+  - gui: added ttk::notebook tabs to divide and organize build options from program variables
+
 [20240501] Integrated changes "from KBS-aurious"
   - Added *PatchFile* to Apply a patch in unified diff format.
   - Added *Install-License*
