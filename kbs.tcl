@@ -323,7 +323,7 @@ proc ::kbs::distclean {args} {
 #===============================================================================
 ##	Contain internally used functions and variables.
 namespace eval ::kbs::build {
-  namespace export Run Get  Require Source Configure Make Install Clean 
+  namespace export Run Get Require Source Configure Make Install Clean 
   namespace export Patch PatchFile Test
 
 ##	Internal variable containing top level script directory.
@@ -378,7 +378,7 @@ namespace eval ::kbs::build {
   variable pkgfile
   set pkgfile {}
 
-##	The array variable '_' contain usefull information of the current building
+##	The array variable '_' contains usefull informations of the current building
 #	process. All variables are provided with default values.
 #	Changing of the default values can be done in the following order:
 #	- file '$(HOME)/.kbsrc' and file './kbsrc' -- Lines starting with '#'
@@ -406,7 +406,9 @@ namespace eval ::kbs::build {
   } else {
     set _(sys)		{unix}
   }
-  set _(exec-make)	  [lindex "[auto_execok gmake] [auto_execok make] make" 0]
+  set _(target-sys)   $_(sys)
+  # set _(exec-make)	  [lindex "[auto_execok gmake] [auto_execok make] make" 0]
+  set _(exec-make)	  [lindex "[auto_execok make] [auto_execok make] make" 0]
   set _(exec-cvs)	    [lindex "[auto_execok cvs] cvs" 0]
   set _(exec-svn)	    [lindex "[auto_execok svn] svn" 0]
   set _(exec-tar)	    [lindex "[auto_execok tar] tar" 0]
@@ -429,7 +431,8 @@ namespace eval ::kbs::build {
   set _(makedir-sys)	{};# package and system specific build dir
   set _(srcdir)		    {};# package specific source dir
   set _(srcdir-sys)	  {};# package and system specific source dir
-  set _(builddir)	    [file join $maindir build[string map {{ } {}} $::tcl_platform(os)]]
+  #set _(builddir)	    [file join $maindir build[string map {{ } {}} $::tcl_platform(os)]]
+  set _(builddir)	    [file join $maindir build[string map {{ } {}} $_(target-sys) ]]
   set _(builddir-sys)	$_(builddir)
   set _(application)	"Kitgen build system ($::kbs(version))";# application name
 }   ;# end of ::kbs::build
@@ -445,7 +448,7 @@ proc ::kbs::build::_sys {file} {
   }
 }
 
-##  Not used
+## TODO:  Not used
 proc ::kbs::build::nativepath {p} {
 	variable _
 	if {$_(sys) eq "win"} {
@@ -875,7 +878,7 @@ proc ::kbs::build::Configure {script} {
 proc ::kbs::build::Configure-Config {path args} {
   variable _
 
-  # collect available options
+  # collect available options using result from "configure --help"
   set myOpts ""
   foreach l [split [exec env $path/configure --help] \n] {
     set l [string trimleft $l]
@@ -890,13 +893,19 @@ proc ::kbs::build::Configure-Config {path args} {
     } elseif {[string range $l 0 7] == "--prefix"} {
       append myOpts " --prefix=[Get builddir-sys]"
     } elseif {[string range $l 0 16] == "--with-tclinclude"} {
+      #
     } elseif {[string range $l 0 9] == "--with-tcl"} {
       append myOpts " --with-tcl=[Get builddir-sys]/lib"
     } elseif {[string range $l 0 15] == "--with-tkinclude"} {
+      #
     } elseif {[string range $l 0 8] == "--with-tk"} {
       append myOpts " --with-tk=[Get builddir-sys]/lib"
     }
   }
+  if {$_(target-sys) == "win"} {
+    append myOpts " --enable-lib32 --enable-lib64 --enable-experimental CC=x86_64-w64-mingw32-gcc --host=x86_64-w64-mingw32"
+  }
+
   #TODO CFLAGS
   Run env CC=[Get CC] TCLSH_PROG=[Get builddir-sys]/bin/tclsh85 WISH_PROG=[Get builddir-sys]/bin/wish $path/configure {*}$myOpts {*}$args
 }
@@ -934,8 +943,8 @@ proc ::kbs::build::Configure-Kit {maincode args} {
   puts $myFd "# start application\n$maincode"
   close $myFd
 }
-#-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
 ##	Evaluate script in 'makedir'.
 # @synopsis{Make script}
 #
@@ -944,6 +953,7 @@ proc ::kbs::build::Configure-Kit {maincode args} {
 #	Available functions are: 'Run', 'Get', 'Patch'
 #	'Kit name ?pkglibdir..?' -- see Make-Kit()
 proc ::kbs::build::Make {script} {
+  variable _
   variable verbose
   variable interp
 
@@ -958,8 +968,8 @@ proc ::kbs::build::Make {script} {
   $interp eval $script
   foreach my {Kit} {interp alias $interp $my}
 }
-#-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
 ##	The procedure links the 'name.vfs' in to the 'makedir' and create
 #	foreach name in 'args' a link from 'builddir'/lib in to 'name.vfs'/lib.
 #	The names in 'args' may subdirectories under 'builddir'/lib. 
@@ -1222,9 +1232,9 @@ proc ::kbs::build::Clean {script} {
   $interp eval [list cd $myDir]
   $interp eval $script
 }
-#-------------------------------------------------------------------------------
 
-##	Return value of given variable name.
+#-------------------------------------------------------------------------------
+##	Return value of given variable "_(var)".
 #	If 'var' starts with 'TCL_' tclConfig.sh will be parsed for TCL_*
 #	variables. If 'var' starts with 'TK_' tkConfig.sh will be parsed for
 #	TK_* variables.
@@ -1269,8 +1279,8 @@ proc ::kbs::build::Get {var} {
   }
   return $_($var)
 }
-#-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
 ##	Patch files.
 # @synopsis{Patch file lineoffste oldtext newtext}
 #
@@ -1582,6 +1592,10 @@ proc ::kbs::build::_configure {args} {
       } -builddir=* {
 	      set myFile [file normalize [string range $myCmd 10 end]]
         set _(builddir) $myFile
+      } -target=win  {  
+        set _(target-sys) win
+      } -target=unix  {  
+        set _(target-sys) unix
       } -bi=* {
         set _(bi) [string range $myCmd 4 end]
       } -CC=* {
@@ -1654,7 +1668,9 @@ proc ::kbs::build::_configure {args} {
     }
     incr myIndex
   }
+  set _(builddir)	    [file join $maindir build[string map {{ } {}} $_(target-sys) ]]
   set _(builddir-sys) [_sys $_(builddir)]
+  puts "=========== builddir: $_(builddir)	"
   set _(kit) [lsort -unique $_(kit)];# all options only once
   if {$_(kit) eq {}} {set _(kit) {vq-cli vq-dyn vq-gui}};# default setting
   foreach my {cli dyn gui} {;# default settings
@@ -1685,6 +1701,7 @@ source kbs-pkg-db.tcl
 #	Process the command line to call one of the '::kbs::*' functions
 #
 # @param[in] argv	list of provided command line arguments
+
 proc ::kbs_main {argv} {
   # parse options
   if {[catch {::kbs::build::_configure {*}$argv} argv]} {
