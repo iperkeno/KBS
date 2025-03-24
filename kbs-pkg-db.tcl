@@ -280,11 +280,11 @@ Package kbskit8.6 {
       set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a [Get builddir-sys]/lib/libtclstub8.6.a"
     }
     if {[Get -threads] in {--enable-threads --enable-threads=yes {}}} {
-      set MYKITVQ  "thread2.8.9 Tk8.6-static" ;#itcl4.2.4 thread2.8.9
-      set MYKITMK  "thread2.8.9 Tk8.6-static" ;#itcl4.2.4 thread2.8.9
+      set MYKITVQ  "itcl4.2.4 thread2.8.9" ;#itcl4.2.4 thread2.8.9
+      set MYKITMK  "itcl4.2.4 thread2.8.9" ;#itcl4.2.4 thread2.8.9
     } else {
-      set MYKITVQ " " ;# itcl4.2.4 
-      set MYKITMK " " ;# itcl4.2.4 
+      set MYKITVQ "itcl4.2.4 " 
+      set MYKITMK "itcl4.2.4 " 
     }
     foreach my [Get kit] {
       Run make MYCLI=$MYCLI MYGUI=$MYGUI MYVQ=$MYVQ MYKITVQ=$MYKITVQ MYMK=$MYMK MYKITMK=$MYKITMK MYKITBI=[Get bi] all-$my
