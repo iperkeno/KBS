@@ -65,10 +65,8 @@ if 0 {;# Testfile
 }
   }
 }
-#@endverbatim
-## @defgroup bwidget
+
 # Updated 14/04/2023
-#@verbatim
 Package bwidget1.9.16 {
   Source {Wget https://downloads.sourceforge.net/project/tcllib/BWidget/1.9.16/bwidget-1.9.16.tar.gz}
   Configure {}
@@ -81,10 +79,8 @@ Package bwidget1.9.16 {
     Run [Get kitgui] demo.tcl
   }
 }
-#@endverbatim
-## @defgroup expect
+
 # Updated 14/04/2023
-#@verbatim
 Package expect5.45.4 { 
   Source {Wget https://sourceforge.net/projects/expect/files/Expect/5.45.4/expect5.45.4.tar.gz}
   Configure {Config [Get srcdir-sys]}
@@ -93,28 +89,22 @@ Package expect5.45.4 {
   Clean {Run make clean}
   Test {Run make test}
 }
-#@endverbatim
-## @defgroup gridplus
-#@verbatim
+
 Package gridplus2.11 {
   Require {Use icons2.0 tablelist5.16}
   Source {Wget http://www.satisoft.com/tcltk/gridplus2/download/gridplus.zip}
   Configure {}
   Install {Tcl}
 }
-#@endverbatim
-## @defgroup icons
+
 # 14/04/2023 - Updated to 2.0
-#@verbatim
 Package icons2.0 {    
   Source {Wget http://www.satisoft.com/tcltk/icons/icons.zip}
   Configure {}
   Install {Tcl}
 }
-#@endverbatim
-## @defgroup img
+
 # @bug #76 at https://sourceforge.net/p/tkimg/bugs/
-#@verbatim
 Package img1.4.3 {
   Source {Svn https://svn.code.sf.net/p/tkimg/code/trunk -r 374}
   Configure {Config [Get srcdir-sys]}
@@ -125,6 +115,7 @@ Package img1.4.3 {
   }
   Clean {Run make clean}
 }
+
 Package img1.4.6 {
   Source {Svn https://svn.code.sf.net/p/tkimg/code/trunk -r 410}
   Configure {Config [Get srcdir-sys]}
@@ -147,10 +138,6 @@ Package img2.0.1 {
   Clean {Run make clean}
 }
 
-
-#@endverbatim
-## @defgroup itcl
-#@verbatim
 Package itcl4.2.4 {
   Source {Cvs incrtcl.cvs.sourceforge.net:/cvsroot/incrtcl -D 2010-10-28 incrTcl}
   Configure {Config [Get srcdir-sys]/itcl}
@@ -159,9 +146,7 @@ Package itcl4.2.4 {
   Clean {Run make clean}
   Test {Run make test}
 }
-#@endverbatim
-## @defgroup itk
-#@verbatim
+
 Package itk3.4 {
   Require {Use itcl3.4}
   Source {Link itcl3.4}
@@ -170,18 +155,14 @@ Package itk3.4 {
   Install {Run make install-binaries install-libraries}
   Clean {Run make clean}
 }
-#@endverbatim
-## @defgroup itk
-#@verbatim
+
 Package itk4.0 {
   Source {Wget http://prdownloads.sourceforge.net/kbskit/itk/itk40.tgz}
   Configure {}
   Install {Tcl itk4.0 library}
 }
-#@endverbatim
-## @defgroup iwidgets
+
 # @bug Source: LD_LIBRARY_PATH setting
-#@verbatim
 Package iwidgets4.0.2 {
   Require {Use itk3.4}
   Source {
@@ -196,9 +177,7 @@ Package iwidgets4.0.2 {
   Clean {Run make clean}
   Test {Run make test}
 }
-#@endverbatim
-## @defgroup iwidgets
-#@verbatim
+
 Package iwidgets4.1 {
   Require {Use itk4.0}
   Source {Wget http://prdownloads.sourceforge.net/kbskit/itk/iwidgets41.tgz
@@ -206,20 +185,16 @@ Wget https://chiselapp.com/user/rene/repository/iwidgets/iwidgets.tgz?uuid=66a05
   Configure {}
   Install {Tcl iwidgets4.1 library}
 }
-#@endverbatim
-## @defgroup kbskit
+
 # BASEKIT source code
 # TODO: the CVS repository is broken, the code is added manually in /sources
-#@verbatim
 Package kbskit0.4 {
   Source {Cvs kbskit.cvs.sourceforge.net:/cvsroot/kbskit -r kbskit_0_4 kbskit}
 }
-#@endverbatim
-## @defgroup kbskit
-#@verbatim
+#
 Package kbskit8.5 {
   Require {
-    Use kbskit0.4 sdx.kit
+    Use kbskit0.4 sdx.kit 
     Use tk8.5-static tk8.5 vfs1.4-static zlib1.2.8-static thread2.8.9 {*}[Get bi]
     if {[lsearch -glob [Get kit] {vq*}] != -1} { Use vqtcl4.1-static }
     if {[lsearch -glob [Get kit] {mk*}] != -1} { Use mk4tcl2.4.9.7-static itcl4.2.4 }
@@ -264,12 +239,10 @@ Package kbskit8.5 {
   Install {foreach my [Get kit] {Run make install-$my}}
   Clean {Run make clean}
 }
-#@endverbatim
-## @defgroup kbskit
-#@verbatim
+
 Package kbskit8.6 {
   Require {
-    Use kbskit0.4 sdx.kit
+    Use kbskit0.4 sdx.kit 
     Use tk8.6-static tk8.6 vfs1.4.2-static {*}[Get bi]
     if {[lsearch -glob [Get kit] {vq*}] != -1} { Use vqtcl4.1-static }
     if {[lsearch -glob [Get kit] {mk*}] != -1} { Use mk4tcl2.4.9.7-static}
@@ -277,6 +250,7 @@ Package kbskit8.6 {
   Source {Link kbskit0.4}
   Configure {Config [Get srcdir-sys] --disable-shared --disable-stubs}
   Make {
+    # set MYMK "[Get builddir-sys]/lib/mk4tcl2.4.9.7-static/libMk4tcl2.4.9.7.a "
     set MYMK "[Get builddir-sys]/lib/mk4tcl2.4.9.7-static/Mk4tcl.a "
     if {$::tcl_platform(platform) == "windows"} {
       if {[Get staticstdcpp]} {
@@ -293,9 +267,10 @@ Package kbskit8.6 {
     }  else  {
       append MYMK "-lstdc++"
     }
+
     if {$::tcl_platform(platform) == "windows"} {
       set MYCLI "[Get builddir-sys]/lib/libtcl86s.a"
-      append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/vfs141.a"
+      append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/vfs142.a"
       set MYGUI "[Get builddir-sys]/lib/libtk86s.a"
       set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/vqtcl41.a [Get builddir-sys]/lib/libtclstub86s.a"
     } else {
@@ -305,8 +280,55 @@ Package kbskit8.6 {
       set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a [Get builddir-sys]/lib/libtclstub8.6.a"
     }
     if {[Get -threads] in {--enable-threads --enable-threads=yes {}}} {
-      set MYKITVQ "thread2.8.9 itcl4.2.4"
-      set MYKITMK "thread2.8.9 itcl4.2.4"
+      set MYKITVQ  "thread2.8.9 Tk8.6-static" ;#itcl4.2.4 thread2.8.9
+      set MYKITMK  "thread2.8.9 Tk8.6-static" ;#itcl4.2.4 thread2.8.9
+    } else {
+      set MYKITVQ " " ;# itcl4.2.4 
+      set MYKITMK " " ;# itcl4.2.4 
+    }
+    foreach my [Get kit] {
+      Run make MYCLI=$MYCLI MYGUI=$MYGUI MYVQ=$MYVQ MYKITVQ=$MYKITVQ MYMK=$MYMK MYKITMK=$MYKITMK MYKITBI=[Get bi] all-$my
+    }
+  }
+  Install {foreach my [Get kit] {Run make install-$my}}
+  Clean {Run make clean}
+}
+
+Package kbskit8.6-win-experiment {
+  Require {
+    Use kbskit0.4 sdx.kit 
+    Use tk8.6-static tk8.6 vfs1.4.2-static {*}[Get bi]
+    if {[lsearch -glob [Get kit] {vq*}] != -1} { Use vqtcl4.1-static }
+    if {[lsearch -glob [Get kit] {mk*}] != -1} { Use mk4tcl2.4.9.7-static}
+  }
+  Source {Link kbskit0.4}
+  Configure {Config [Get srcdir-sys]  }
+
+# --disable-shared --disable-stubs --with-tcl=[Get builddir-sys]/tcl8.6-static --with-tclinclude=[Get builddir-sys]/include
+#
+  Make {
+    set     MYMK  " [Get builddir-sys]/lib/Mk4tcl2.4.9.7/libMk4tcl2.4.9.7.a"
+    append  MYMK  " -static-libstdc++"
+    append  MYMK  " -lstdc++ -lm"
+    append  MYMK  " [Get builddir-sys]/lib/libtclstub86s.a "
+    append  MYMK  " [Get builddir-sys]/lib/libtcl86s.a "
+
+
+    # append  MYMK  " -Wl,-Bstatic -Wl,-Bdynamic"
+
+    set     MYCLI " [Get builddir-sys]/lib/libtcl86s.a"
+    append  MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs142.a"
+    
+    set     MYGUI " [Get builddir-sys]/lib/libtk86s.a"
+    
+    set     MYVQ  " [Get builddir-sys]/lib/libtclstub86s.a"
+    set     MYVQ  " [Get builddir-sys]/lib/vqtcl4.1/vqtcl41.a"
+
+
+
+    if {[Get -threads] in {--enable-threads --enable-threads=yes {}}} {
+      set MYKITVQ "thread2.8.9 itcl4.2.4 tk8.6"
+      set MYKITMK "thread2.8.9 itcl4.2.4 tk8.6"
     } else {
       set MYKITVQ "itcl4.2.4"
       set MYKITMK "itcl4.2.4"
@@ -318,6 +340,7 @@ Package kbskit8.6 {
   Install {foreach my [Get kit] {Run make install-$my}}
   Clean {Run make clean}
 }
+
 #@endverbatim
 # @defgroup memchan
 #@verbatim
@@ -366,9 +389,10 @@ Package mk4tcl2.4.9.7-static {
     if {$::tcl_platform(os) == "SunOS" && [Get CC] == "cc"} {
       Patch [Get srcdir]/tcl/mk4tcl.h 9 "#include <tcl.h>\n\n" "#include <tcl.h>\n#undef TCL_WIDE_INT_TYPE\n"
     }
-    Config [Get srcdir-sys]/unix --disable-shared --with-tcl=[Get builddir-sys]/include
+    Config [Get srcdir-sys]/unix  --disable-shared --with-tcl=[Get builddir-sys]/include
+    # Config [Get srcdir-sys]/tcl   --with-tcl=[Get builddir-sys]/lib
   }
-  Make {Run make tcl}
+  Make {Run make }
   Install {
     Run make install
     Libdir Mk4tcl
@@ -514,7 +538,7 @@ Package tablelist6.21 {
 #@verbatim
 Package tcl8.5 {
   Source {Wget http://prdownloads.sourceforge.net/tcl/tcl8.5.19-src.tar.gz}
-  Configure {Config [Get srcdir-sys]/[Get sys]}
+  Configure {Config [Get srcdir-sys]/[Get target-sys]}
   Make {Run make}
   Install {Run make install-binaries install-libraries install-private-headers}
   Clean {Run make clean}
@@ -525,7 +549,7 @@ Package tcl8.5 {
 #@verbatim
 Package tcl8.5-static {
   Source {Link tcl8.5}
-  Configure {Config [Get srcdir-sys]/[Get sys] --disable-shared}
+  Configure {Config [Get srcdir-sys]/[Get target-sys] --disable-shared}
   Make {Run make}
   Install {Run make install-binaries install-libraries install-private-headers}
   Clean {Run make clean}
@@ -536,7 +560,7 @@ Package tcl8.5-static {
 #@verbatim
 Package tcl8.6 {
   Source {Wget https://sourceforge.net/projects/tcl/files/Tcl/8.6.14/tcl8.6.14-src.tar.gz}
-  Configure {Config [Get srcdir-sys]/[Get sys]}
+  Configure {Config [Get srcdir-sys]/[Get target-sys] }
   Make {Run make}
   Install {Run make install install-private-headers}
   Clean {Run make clean}
@@ -547,7 +571,7 @@ Package tcl8.6 {
 #@verbatim
 Package tcl8.6-static {
   Source {Link tcl8.6}
-  Configure {Config [Get srcdir-sys]/[Get sys] --disable-shared}
+  Configure {Config [Get srcdir-sys]/[Get sys]  --disable-shared}
   Make {Run make}
   Install {
     Run make install install-private-headers
@@ -656,7 +680,7 @@ Package thread2.8.9-static {
 Package tk8.5 {
   Require {Use tcl8.5}
   Source {Wget http://prdownloads.sourceforge.net/tcl/tk8.5.19-src.tar.gz}
-  Configure {Config [Get srcdir-sys]/[Get sys]}
+  Configure {Config [Get srcdir-sys]/[Get target-sys]}
   Make {Run make}
   Install {Run make install install-private-headers}
   Clean {Run make clean}
@@ -668,7 +692,7 @@ Package tk8.5 {
 Package tk8.5-static {
   Require {Use tcl8.5-static}
   Source {Link tk8.5}
-  Configure {Config [Get srcdir-sys]/[Get sys] --disable-shared}
+  Configure {Config [Get srcdir-sys]/[Get target-sys] --disable-shared}
   Make {Run make}
   Install {Run make install install-private-headers}
   Clean {Run make clean}
@@ -686,7 +710,7 @@ Package tk8.6 {
     } else {
       set tkopt ""
     }
-    Config [Get srcdir-sys]/[Get sys] {*}$tkopt
+    Config [Get srcdir-sys]/[Get target-sys] {*}$tkopt 
   }
   Make {Run make}
   Install {Run make install install-private-headers}
@@ -705,7 +729,7 @@ Package tk8.6-static {
     } else {
       set tkopt ""
     }
-    Config [Get srcdir-sys]/[Get sys] --disable-shared {*}$tkopt
+    Config [Get srcdir-sys]/[Get target-sys] --disable-shared {*}$tkopt 
   }
   Make {Run make}
   Install {Run make install install-private-headers
@@ -908,7 +932,7 @@ Package vfs1.4.2 {
 Package vfs1.4.2-static {
   Source {Link vfs1.4.2}
   Configure {
-    Config [Get srcdir-sys] --disable-shared --disable-stubs -with-tcl8 --with-tclinclude=[Get builddir-sys]/include}
+    Config [Get srcdir-sys] --disable-shared --disable-stubs -with-tcl8 --with-tclinclude=[Get builddir-sys]/include }
   Make {Run make}
   Install {Run make install-binaries}
   Clean {Run make clean}
@@ -933,7 +957,7 @@ Package vfs1.4 {
 Package vfs1.4-static {
   Source {Link vfs1.4}
   Configure {
-    Config [Get srcdir-sys] --disable-shared --with-tclinclude=[Get builddir-sys]/include}
+    Config [Get srcdir-sys] --with-tclinclude=[Get builddir-sys]/include --disable-shared }
   Make {Run make}
   Install {Run make install-binaries}
   Clean {Run make clean}
@@ -982,6 +1006,23 @@ Package xotcl1.6.8 {
 Package zlib1.2.8 {
   Source {Wget http://sourceforge.net/projects/libpng/files/zlib/1.2.8/zlib-1.2.8.tar.gz}
 }
+
+Package zlib-static {
+  Configure {
+    eval file copy [glob [Get srcdir]/*] .
+    # if {$::tcl_platform(platform) ne {windows}} {
+    #   set MYFLAGS "[Get TCL_EXTRA_CFLAGS] [Get TCL_CFLAGS_OPTIMIZE]"
+    #   Run env CC=x86_64-w64-mingw32 CFLAGS=$MYFLAGS ./configure --prefix=[Get builddir-sys] --eprefix=[Get builddir-sys] 
+    # }
+      Run env CC=x86_64-w64-mingw32 ./configure --prefix=[Get builddir-sys] --eprefix=[Get builddir-sys] 
+
+  }
+  Install {
+    Run env BINARY_PATH=[Get builddir]/bin INCLUDE_PATH=[Get builddir]/include LIBRARY_PATH=[Get builddir]/lib make -fwin32/Makefile.gcc install
+  }
+}
+
+
 #@endverbatim
 ## @defgroup zlib
 #@verbatim
@@ -991,14 +1032,15 @@ Package zlib1.2.8-static {
     eval file copy [glob [Get srcdir]/*] .
     if {$::tcl_platform(platform) ne {windows}} {
       set MYFLAGS "[Get TCL_EXTRA_CFLAGS] [Get TCL_CFLAGS_OPTIMIZE]"
-      Run env CC=[Get CC] CFLAGS=$MYFLAGS ./configure --prefix=[Get builddir-sys] --eprefix=[Get builddir-sys]
+      Run env CC=[Get CC] CFLAGS=$MYFLAGS ./configure --prefix=[Get builddir-sys] --eprefix=[Get builddir-sys] 
     }
   }
   Make {
     if {$::tcl_platform(platform) eq {windows}} {
       Run env BINARY_PATH=[Get builddir]/bin INCLUDE_PATH=[Get builddir]/include LIBRARY_PATH=[Get builddir]/lib make -fwin32/Makefile.gcc
     } else {
-      Run make
+      # Run make
+      Run env BINARY_PATH=[Get builddir]/bin INCLUDE_PATH=[Get builddir]/include LIBRARY_PATH=[Get builddir]/lib make -fwin32/Makefile.gcc
     }
   }
   Install {
@@ -1102,4 +1144,6 @@ Package kkgkit0.2 {
 }
 #@endverbatim
 ## @}
+
+
 }
