@@ -5610,10 +5610,7 @@ fi
 # TEA_ADD_* any platform specific compiler/build info here.
 #--------------------------------------------------------------------
 
-if test "${TEA_PLATFORM}" = "windows" ; then
-
-printf "%s\n" "#define BUILD_tclkit 1" >>confdefs.h
-
+    printf "%s\n" "#define BUILD_tclkit 1" >>confdefs.h
     CLEANFILES="*.lib *.dll *.exp *.ilk *.pdb vc*.pch"
     #TEA_ADD_INCLUDES([-I\"$(${CYGPATH} ${srcdir}/win)\"])
     VPATH="${srcdir}/generic ${TCL_SRC_DIR}/win ${TK_SRC_DIR}/win"
@@ -5622,16 +5619,30 @@ printf "%s\n" "#define BUILD_tclkit 1" >>confdefs.h
     DYN_OBJ="tclAppInit.o tclkitsh.res.o wish.res.o"
     GUI_OBJ="winMain.o tclkit.res.o wish.res.o"
     GUI_FLAGS="-mwindows"
-else
-    CLEANFILES=""
-    #TEA_ADD_LIBS([-lsuperfly])
-    VPATH="${srcdir}/generic:${TCL_SRC_DIR}/unix:${TK_SRC_DIR}/unix"
-    EXESUFFIX=""
-    CLI_OBJ="tclAppInit.o"
-    DYN_OBJ="tclAppInit.o"
-    GUI_OBJ="tclAppInit.o"
-    GUI_FLAGS=""
-fi
+
+
+# if test "${TEA_PLATFORM}" = "windows" ; then
+
+# printf "%s\n" "#define BUILD_tclkit 1" >>confdefs.h
+
+#     CLEANFILES="*.lib *.dll *.exp *.ilk *.pdb vc*.pch"
+#     #TEA_ADD_INCLUDES([-I\"$(${CYGPATH} ${srcdir}/win)\"])
+#     VPATH="${srcdir}/generic ${TCL_SRC_DIR}/win ${TK_SRC_DIR}/win"
+#     EXESUFFIX=".exe"
+#     CLI_OBJ="tclAppInit.o tclkitsh.res.o"
+#     DYN_OBJ="tclAppInit.o tclkitsh.res.o wish.res.o"
+#     GUI_OBJ="winMain.o tclkit.res.o wish.res.o"
+#     GUI_FLAGS="-mwindows"
+# else
+#     CLEANFILES=""
+#     #TEA_ADD_LIBS([-lsuperfly])
+#     VPATH="${srcdir}/generic:${TCL_SRC_DIR}/unix:${TK_SRC_DIR}/unix"
+#     EXESUFFIX=""
+#     CLI_OBJ="tclAppInit.o"
+#     DYN_OBJ="tclAppInit.o"
+#     GUI_OBJ="tclAppInit.o"
+#     GUI_FLAGS=""
+# fi
 
 
 
