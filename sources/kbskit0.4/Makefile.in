@@ -159,8 +159,7 @@ PKG_CFLAGS	= @PKG_CFLAGS@
 # that your library may use.  TCL_DEFS can actually be a problem if
 # you do not compile with a similar machine setup as the Tcl core was
 # compiled with.
-#DEFS		= $(TCL_DEFS) @DEFS@ $(PKG_CFLAGS)
-DEFS		= @DEFS@ $(PKG_CFLAGS)
+DEFS		= $(TCL_DEFS) @DEFS@ $(PKG_CFLAGS)
 
 CONFIG_CLEAN_FILES = Makefile
 
@@ -258,13 +257,14 @@ depend:
 #========================================================================
 setupvfs.tcl:
 	cp $(srcdir)/library/*.tcl $(srcdir)/library/tclkit.ico .
+	cp $(srcdir)/win/libwinpthread-1.dll libwinpthread-1.dll
 tclkit.res.o: $(srcdir)/win/tclkit.rc
-	windres -o $@ --define STATIC_BUILD\
+	x86_64-w64-mingw32-windres -o $@ --define STATIC_BUILD\
 	  --define TCLKIT_WITH_TK --define BASE_NO_TK_ICON\
 	  --include $(includedir) --include $(TK_SRC_DIR)/win/rc\
 	  --include $(prefix)/tk$(TK_VERSION) $<
 tclkitsh.res.o: $(srcdir)/win/tclkit.rc
-	windres -o $@ --define STATIC_BUILD\
+	x86_64-w64-mingw32-windres -o $@ --define STATIC_BUILD\
 	  --include $(includedir) --include $(srcdir)/library $<
 wish.res.o:
 	cp $(prefix)/tk$(TK_VERSION)/$@ $@
@@ -308,29 +308,32 @@ kitInit_mk.o: $(srcdir)/generic/kitInit.c
 	$(COMPILE) -c `@CYGPATH@ $(srcdir)/generic/kitInit.c` -o $@
 kitInitGui_mk.o: $(srcdir)/generic/kitInit.c
 	$(COMPILE) -DKIT_INCLUDES_TK -c `@CYGPATH@ $(srcdir)/generic/kitInit.c` -o $@
-$(KBSMK_CLI): setupvfs.tcl $(PKG_OBJECTS) kitInit_mk.o $(CLI_OBJ)
+$(KBSMK_CLI): setupvfs.tcl $(PKG_OBJECTS) kitInit_mk.o $(CLI_OBJ) 
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInit_mk.o $(CLI_OBJ)\
 	  $(MYCLI) $(MYMK) -o $@ $(TCL_LIBS) 
 	cp $@ my$@
-	./my$@ -init- setupvfs.tcl $@ cli $(MYKITMK)
+	cp $(srcdir)/win/libwinpthread-1.dll libwinpthread-1.dll  
+	${EMU} ./my$@ -init- setupvfs.tcl $@ cli $(MYKITMK)
 
 $(KBSMK_DYN): setupvfs.tcl $(PKG_OBJECTS) kitInit_mk.o $(DYN_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInit_mk.o $(DYN_OBJ)\
-	  $(MYCLI) $(MYMK) -o $@ $(TCL_LIBS) 
+	$(MYCLI) $(MYMK) -o $@ $(TCL_LIBS) 
 	cp $@ my$@
-	./my$@ -init- setupvfs.tcl $@ dyn $(MYKITMK)
+	cp $(srcdir)/win/libwinpthread-1.dll libwinpthread-1.dll  
+	${EMU} ./my$@ -init- setupvfs.tcl $@ dyn $(MYKITMK) 
 
 $(KBSMK_GUI): setupvfs.tcl $(PKG_OBJECTS) kitInitGui_mk.o $(GUI_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInitGui_mk.o $(GUI_OBJ)\
 	  $(MYGUI) $(MYCLI) $(MYMK) -o $@ $(TK_LIBS) $(MYXFT) $(GUI_FLAGS)
 	cp $@ my$@
-	./my$@ -init- setupvfs.tcl $@ gui $(MYKITMK)
+	cp $(srcdir)/win/libwinpthread-1.dll libwinpthread-1.dll  
+	${EMU} ./my$@ -init- setupvfs.tcl $@ gui $(MYKITMK)
 
 $(KBSMK_BI): setupvfs.tcl $(PKG_OBJECTS) kitInitGui_mk.o $(GUI_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInitGui_mk.o $(GUI_OBJ)\
 	  $(MYGUI) $(MYCLI) $(MYMK) -o $@ $(TK_LIBS) $(MYXFT) $(GUI_FLAGS)
 	cp $@ my$@
-	./my$@ -init- setupvfs.tcl $@ gui $(MYKITMK) $(MYKITBI)
+	${EMU} ./my$@ -init- setupvfs.tcl $@ gui $(MYKITMK) $(MYKITBI) libwinpthread-1.dll  
 
 #========================================================================
 # $(PKG_LIB_FILE) should be listed as part of the BINARIES variable
@@ -602,3 +605,5 @@ uninstall-binaries:
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
+
+
