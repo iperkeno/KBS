@@ -200,9 +200,26 @@ Package kbskit8.5 {
     if {[lsearch -glob [Get kit] {mk*}] != -1} { Use mk4tcl2.4.9.7-static itcl4.2.4 }
   }
   Source {Link kbskit0.4}
-  Configure {Config [Get srcdir-sys] --disable-shared}
+  Configure {Config [Get srcdir-sys] --disable-shared }
   Make {
-    set MYMK "[Get builddir-sys]/lib/mk4tcl2.4.9.7-static/Mk4tcl.a "
+    # set MYMK "[Get builddir-sys]/lib/Mk4tcl2.4.9.7/Mk4tcl.a "
+
+    if {$::tcl_platform(platform) == "windows"} {
+      set MYMK "[Get builddir-sys]/lib/Mk4tcl2.4.9.7/libMk4tcl2.4.9.7.a "
+      set MYCLI "[Get builddir-sys]/lib/libtcl85s.a"
+      append MYCLI " [Get builddir-sys]/lib/libz.a"
+      append MYCLI " [Get builddir-sys]/lib/vfs1.4.1/libvfs142.a"
+      set MYGUI "[Get builddir-sys]/lib/libtk85s.a"
+      set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/vqtcl41.a"
+    } else {
+      set MYMK "[Get builddir-sys]/lib/mk4tcl2.4.9.7-static/Mk4tcl.a "
+      set MYCLI "[Get builddir-sys]/lib/libtcl8.5.a"
+      append MYCLI " [Get builddir-sys]/lib/libz.a"
+      append MYCLI " [Get builddir-sys]/lib/vfs1.4.1/libvfs1.4.1.a"
+      set MYGUI "[Get builddir-sys]/lib/libtk8.5.a"
+      set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a"
+    }
+
     if {$::tcl_platform(os) == "Darwin"} {
       append MYMK "-static-libgcc -lstdc++ -framework CoreFoundation"
     } elseif {$::tcl_platform(os) == "SunOS" && [Get CC] == "cc"} {
@@ -212,25 +229,13 @@ Package kbskit8.5 {
     }  else  {
       append MYMK "-lstdc++"
     }
-    if {$::tcl_platform(platform) == "windows"} {
-      set MYCLI "[Get builddir-sys]/lib/libtcl85s.a"
-      append MYCLI " [Get builddir-sys]/lib/libz.a"
-      append MYCLI " [Get builddir-sys]/lib/vfs1.4.1/vfs141.a"
-      set MYGUI "[Get builddir-sys]/lib/libtk85s.a"
-      set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/vqtcl41.a"
-    } else {
-      set MYCLI "[Get builddir-sys]/lib/libtcl8.5.a"
-      append MYCLI " [Get builddir-sys]/lib/libz.a"
-      append MYCLI " [Get builddir-sys]/lib/vfs1.4.1/libvfs1.4.1.a"
-      set MYGUI "[Get builddir-sys]/lib/libtk8.5.a"
-      set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a"
-    }
+
     if {[Get -threads] in {--enable-threads --enable-threads=yes {}}} {
       set MYKITVQ "thread2.8.9"
       set MYKITMK "thread2.8.9 itcl4.2.4"
     } else {
       set MYKITVQ ""
-      set MYKITMK "itcl4.2.4"
+      set MYKITMK " itcl4.2.4"
     }
     foreach my [Get kit] {
       Run make MYCLI=$MYCLI MYGUI=$MYGUI MYVQ=$MYVQ MYKITVQ=$MYKITVQ MYMK=$MYMK MYKITMK=$MYKITMK MYKITBI=[Get bi] all-$my
@@ -240,7 +245,7 @@ Package kbskit8.5 {
   Clean {Run make clean}
 }
 
-Package kbskit8.6 {
+Package kbskit8.6-original {
   Require {
     Use kbskit0.4 sdx.kit 
     Use tk8.6-static tk8.6 vfs1.4.2-static {*}[Get bi]
@@ -250,29 +255,29 @@ Package kbskit8.6 {
   Source {Link kbskit0.4}
   Configure {Config [Get srcdir-sys] --disable-shared --disable-stubs}
   Make {
-    # set MYMK "[Get builddir-sys]/lib/mk4tcl2.4.9.7-static/libMk4tcl2.4.9.7.a "
-    set MYMK "[Get builddir-sys]/lib/mk4tcl2.4.9.7-static/Mk4tcl.a "
-    if {$::tcl_platform(platform) == "windows"} {
+    set MYMK "[Get builddir-sys]/lib/mk4tcl2.4.9.7-static/libMk4tcl2.4.9.7.a "
+    
+    if {[Get target-sys]  == "win"} {
       if {[Get staticstdcpp]} {
-        append MYMK "[Get builddir-sys]/lib/libtclstub86s.a -static-libstdc++ -lstdc++"
+        append MYMK "[Get builddir-sys]/lib/libtclstub86s.a -static -static-libgcc -static-libstdc++ -lstdc++"
       } else {
         append MYMK "[Get builddir-sys]/lib/libtclstub86s.a -lstdc++"
       }
     } elseif {$::tcl_platform(os) == "Darwin"} {
-      append MYMK "-lstdc++ -framework CoreFoundation"
+      append MYMK " -lstdc++ -framework CoreFoundation "
     } elseif {$::tcl_platform(os) == "SunOS" && [Get CC] == "cc"} {
-      append MYMK "-lCstd -lCrun"
+      append MYMK " -lCstd -lCrun "
     } elseif {[Get staticstdcpp]} {
-      append MYMK "-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lm"
+      append MYMK " -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lm"
     }  else  {
       append MYMK "-lstdc++"
     }
 
-    if {$::tcl_platform(platform) == "windows"} {
+    if {[Get target-sys]  == "win"} {
       set MYCLI "[Get builddir-sys]/lib/libtcl86s.a"
-      append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/vfs142.a"
-      set MYGUI "[Get builddir-sys]/lib/libtk86s.a"
-      set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/vqtcl41.a [Get builddir-sys]/lib/libtclstub86s.a"
+      append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs142.a"
+      set MYGUI "[Get builddir-sys]/lib/libtk86.a"
+      set MYVQ "[Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a [Get builddir-sys]/lib/libtclstub86s.a"
     } else {
       set MYCLI "[Get builddir-sys]/lib/libtcl8.6.a"
       append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs1.4.2.a"
@@ -294,7 +299,9 @@ Package kbskit8.6 {
   Clean {Run make clean}
 }
 
-Package kbskit8.6-win-experiment {
+
+#########################################################################################################################
+Package kbskit8.6 {
   Require {
     Use kbskit0.4 sdx.kit 
     Use tk8.6-static tk8.6 vfs1.4.2-static {*}[Get bi]
@@ -302,39 +309,63 @@ Package kbskit8.6-win-experiment {
     if {[lsearch -glob [Get kit] {mk*}] != -1} { Use mk4tcl2.4.9.7-static}
   }
   Source {Link kbskit0.4}
-  Configure {Config [Get srcdir-sys]  }
-
-# --disable-shared --disable-stubs --with-tcl=[Get builddir-sys]/tcl8.6-static --with-tclinclude=[Get builddir-sys]/include
-#
+  Configure {  
+    # Patch [Get srcdir-sys]/win/Makefile.in 171 \
+    #   {COMPILE		= $(CC) $(DEFS) -DTCL_BROKEN_MAINARGS $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)} \
+    #   {COMPILE		= $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)}
+    #
+    Config [Get srcdir-sys] ;#--enable-thread --disable-shared ;#--with-tcl=[Get builddir-sys]/lib --disable-stubs 
+  }
   Make {
-    set     MYMK  " [Get builddir-sys]/lib/Mk4tcl2.4.9.7/libMk4tcl2.4.9.7.a"
-    append  MYMK  " -static-libstdc++"
-    append  MYMK  " -lstdc++ -lm"
-    append  MYMK  " [Get builddir-sys]/lib/libtclstub86s.a "
-    append  MYMK  " [Get builddir-sys]/lib/libtcl86s.a "
-
-
-    # append  MYMK  " -Wl,-Bstatic -Wl,-Bdynamic"
-
-    set     MYCLI " [Get builddir-sys]/lib/libtcl86s.a"
-    append  MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs142.a"
+    set MYMK "[Get builddir-sys]/lib/Mk4tcl2.4.9.7/libMk4tcl2.4.9.7.a "
     
-    set     MYGUI " [Get builddir-sys]/lib/libtk86s.a"
-    
-    set     MYVQ  " [Get builddir-sys]/lib/libtclstub86s.a"
-    set     MYVQ  " [Get builddir-sys]/lib/vqtcl4.1/vqtcl41.a"
+    if {[Get target-sys]  == "win"} {
+      if {[Get staticstdcpp]} {
+        append MYMK " [Get builddir-sys]/lib/libtclstub86s.a "
+        # append MYMK " -L[Get builddir-sys]/bin"
+        append MYMK " -L[Get builddir-sys]/lib"
+        # append MYMK " -optl-static -static -static-libgcc -static-libstdc++ -lstdc++"
+        append MYMK " -static"
+        append MYMK " -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lm"
+      } else {
+        append MYMK " [Get builddir-sys]/lib/libtclstub86s.a -lstdc++"
+      }
+    } elseif {$::tcl_platform(os) == "Darwin"} {
+      append MYMK " -lstdc++ -framework CoreFoundation "
+    } elseif {$::tcl_platform(os) == "SunOS" && [Get CC] == "cc"} {
+      append MYMK " -lCstd -lCrun "
+    } elseif {[Get staticstdcpp]} {
+      append MYMK " -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lm"
+      append MYMK " -optl-static -static-libgcc -lstdc++ "
+    }  else  {
+      append MYMK " -lstdc++"
+    }
 
-
-
-    if {[Get -threads] in {--enable-threads --enable-threads=yes {}}} {
-      set MYKITVQ "thread2.8.9 itcl4.2.4 tk8.6"
-      set MYKITMK "thread2.8.9 itcl4.2.4 tk8.6"
+    if {[Get target-sys]  == "win"} {
+      set    MYCLI " [Get builddir-sys]/lib/libtcl86s.a"
+      # append MYCLI " [Get builddir-sys]/bin/tcl86.dll" 
+      # append MYCLI " [Get builddir-sys]/bin/zlib1.dll"
+      # append MYCLI " [Get builddir-sys]/bin/libstdc++-6.dll"
+      append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs142.a"
+      set    MYGUI " [Get builddir-sys]/lib/libtk86.a"
+      set    MYVQ  " [Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a "
+      set    MYEMU " wine"
     } else {
-      set MYKITVQ "itcl4.2.4"
-      set MYKITMK "itcl4.2.4"
+      set    MYCLI " [Get builddir-sys]/lib/libtcl8.6.a"
+      append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs1.4.2.a"
+      set    MYGUI " [Get builddir-sys]/lib/libtk8.6.a"
+      set    MYVQ  " [Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a [Get builddir-sys]/lib/libtclstub8.6.a"
+    }
+    if {[Get -threads] in {--enable-threads --enable-threads=yes {}}} {
+      set    MYKITVQ  " itcl4.2.4 thread2.8.9" 
+      set    MYKITMK  " itcl4.2.4 thread2.8.9"
+    } else {
+      set    MYKITVQ " itcl4.2.4 " 
+      set    MYKITMK " itcl4.2.4 " 
     }
     foreach my [Get kit] {
-      Run make MYCLI=$MYCLI MYGUI=$MYGUI MYVQ=$MYVQ MYKITVQ=$MYKITVQ MYMK=$MYMK MYKITMK=$MYKITMK MYKITBI=[Get bi] all-$my
+      Run make clean
+      Run make EMU=$MYEMU MYCLI=$MYCLI MYGUI=$MYGUI MYVQ=$MYVQ MYKITVQ=$MYKITVQ MYMK=$MYMK MYKITMK=$MYKITMK MYKITBI=[Get bi] all-$my
     }
   }
   Install {foreach my [Get kit] {Run make install-$my}}
@@ -389,7 +420,13 @@ Package mk4tcl2.4.9.7-static {
     if {$::tcl_platform(os) == "SunOS" && [Get CC] == "cc"} {
       Patch [Get srcdir]/tcl/mk4tcl.h 9 "#include <tcl.h>\n\n" "#include <tcl.h>\n#undef TCL_WIDE_INT_TYPE\n"
     }
-    Config [Get srcdir-sys]/unix  --disable-shared --with-tcl=[Get builddir-sys]/include
+    
+    Patch [Get srcdir]/tcl/mk4tcl.cpp 1967 \
+    "          tcl_ListObjAppendElement(r, Tcl_NewLongObj((long)a->GetAt(i)));" \
+    "          tcl_ListObjAppendElement(r, Tcl_NewLongObj((long long)a->GetAt(i)));"
+    
+    
+    Config [Get srcdir-sys]/tcl  --disable-shared ;#--with-tcl=[Get builddir-sys]/include
     # Config [Get srcdir-sys]/tcl   --with-tcl=[Get builddir-sys]/lib
   }
   Make {Run make }
