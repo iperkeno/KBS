@@ -257,7 +257,6 @@ depend:
 #========================================================================
 setupvfs.tcl:
 	cp $(srcdir)/library/*.tcl $(srcdir)/library/tclkit.ico .
-	cp $(srcdir)/win/libwinpthread-1.dll libwinpthread-1.dll
 tclkit.res.o: $(srcdir)/win/tclkit.rc
 	x86_64-w64-mingw32-windres -o $@ --define STATIC_BUILD\
 	  --define TCLKIT_WITH_TK --define BASE_NO_TK_ICON\
@@ -276,30 +275,31 @@ kitInit_vq.o: $(srcdir)/generic/kitInit.c
 	$(COMPILE) -DKIT_LITE -c `@CYGPATH@ $(srcdir)/generic/kitInit.c` -o $@
 kitInitGui_vq.o: $(srcdir)/generic/kitInit.c
 	$(COMPILE) -DKIT_LITE -DKIT_INCLUDES_TK -c `@CYGPATH@ $(srcdir)/generic/kitInit.c` -o $@
+
 $(KBSVQ_CLI): setupvfs.tcl $(PKG_OBJECTS) kitInit_vq.o $(CLI_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInit_vq.o $(CLI_OBJ)\
 	  $(MYCLI) $(MYVQ) -o $@ $(TCL_LIBS) 
 	cp $@ my$@
-	./my$@ -init- setupvfs.tcl $@ cli $(MYKITVQ)
+	${EMU} ./my$@ -init- setupvfs.tcl $@ cli $(MYKITVQ)
 
 $(KBSVQ_DYN): setupvfs.tcl $(PKG_OBJECTS) kitInit_vq.o $(DYN_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInit_vq.o $(DYN_OBJ)\
 	  $(MYCLI) $(MYVQ) -o $@ $(TCL_LIBS) 
 	cp $@ my$@
-	./my$@ -init- setupvfs.tcl $@ dyn $(MYKITVQ)
+	${EMU} ./my$@ -init- setupvfs.tcl $@ dyn $(MYKITVQ)
 
 # Order of libs is significant, at least for SunOS 5.8 with cc
 $(KBSVQ_GUI): setupvfs.tcl $(PKG_OBJECTS) kitInitGui_vq.o $(GUI_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInitGui_vq.o $(GUI_OBJ)\
 	  $(MYGUI) $(MYCLI) $(MYVQ) -o $@ $(TK_LIBS) $(MYXFT) $(GUI_FLAGS)
 	cp $@ my$@
-	./my$@ -init- setupvfs.tcl $@ gui $(MYKITVQ)
+	${EMU} ./my$@ -init- setupvfs.tcl $@ gui $(MYKITVQ)
 
 $(KBSVQ_BI): setupvfs.tcl $(PKG_OBJECTS) kitInitGui_vq.o $(GUI_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInitGui_vq.o $(GUI_OBJ)\
 	  $(MYGUI) $(MYCLI) $(MYVQ) -o $@ $(TK_LIBS) $(MYXFT) $(GUI_FLAGS)
 	cp $@ my$@
-	./my$@ -init- setupvfs.tcl $@ gui $(MYKITVQ) $(MYKITBI)
+	${EMU} ./my$@ -init- setupvfs.tcl $@ gui $(MYKITVQ) $(MYKITBI)
 
 #
 # version with metakit database bindings
@@ -308,32 +308,30 @@ kitInit_mk.o: $(srcdir)/generic/kitInit.c
 	$(COMPILE) -c `@CYGPATH@ $(srcdir)/generic/kitInit.c` -o $@
 kitInitGui_mk.o: $(srcdir)/generic/kitInit.c
 	$(COMPILE) -DKIT_INCLUDES_TK -c `@CYGPATH@ $(srcdir)/generic/kitInit.c` -o $@
+
 $(KBSMK_CLI): setupvfs.tcl $(PKG_OBJECTS) kitInit_mk.o $(CLI_OBJ) 
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInit_mk.o $(CLI_OBJ)\
 	  $(MYCLI) $(MYMK) -o $@ $(TCL_LIBS) 
 	cp $@ my$@
-	cp $(srcdir)/win/libwinpthread-1.dll libwinpthread-1.dll  
 	${EMU} ./my$@ -init- setupvfs.tcl $@ cli $(MYKITMK)
 
 $(KBSMK_DYN): setupvfs.tcl $(PKG_OBJECTS) kitInit_mk.o $(DYN_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInit_mk.o $(DYN_OBJ)\
 	$(MYCLI) $(MYMK) -o $@ $(TCL_LIBS) 
 	cp $@ my$@
-	cp $(srcdir)/win/libwinpthread-1.dll libwinpthread-1.dll  
 	${EMU} ./my$@ -init- setupvfs.tcl $@ dyn $(MYKITMK) 
 
 $(KBSMK_GUI): setupvfs.tcl $(PKG_OBJECTS) kitInitGui_mk.o $(GUI_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInitGui_mk.o $(GUI_OBJ)\
 	  $(MYGUI) $(MYCLI) $(MYMK) -o $@ $(TK_LIBS) $(MYXFT) $(GUI_FLAGS)
 	cp $@ my$@
-	cp $(srcdir)/win/libwinpthread-1.dll libwinpthread-1.dll  
 	${EMU} ./my$@ -init- setupvfs.tcl $@ gui $(MYKITMK)
 
 $(KBSMK_BI): setupvfs.tcl $(PKG_OBJECTS) kitInitGui_mk.o $(GUI_OBJ)
 	${CC} ${CFLAGS} ${LDFLAGS} $(PKG_OBJECTS) kitInitGui_mk.o $(GUI_OBJ)\
 	  $(MYGUI) $(MYCLI) $(MYMK) -o $@ $(TK_LIBS) $(MYXFT) $(GUI_FLAGS)
 	cp $@ my$@
-	${EMU} ./my$@ -init- setupvfs.tcl $@ gui $(MYKITMK) $(MYKITBI) libwinpthread-1.dll  
+	${EMU} ./my$@ -init- setupvfs.tcl $@ gui $(MYKITMK) $(MYKITBI) 
 
 #========================================================================
 # $(PKG_LIB_FILE) should be listed as part of the BINARIES variable
