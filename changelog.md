@@ -4,7 +4,11 @@
 
 [20250321] 
   - added command "target-sys" to specify buid target: unix/win, default is _(sys)
-  - gui: added ttk::notebook tabs to divide and organize build options from program variables
+  - kbs-gui: added ttk::notebook tabs to divide and organize build options from program variables
+  - kbskit8.6: rename "configure.in" to "configure.ac"
+  - kbskit8.6: updated tcl.m4 from vfs, this version handle correctly the target os.
+  - kbskit8.6: in "configure.ac" commented TEA_ENABLE_SHARED to allow windows crossbuild 
+  - kbskit8.6: clear definition of build steps for win/unix and static/dynamic
 
 [20240501] Integrated changes "from KBS-aurious"
   - Added *PatchFile* to Apply a patch in unified diff format.
