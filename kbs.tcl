@@ -907,7 +907,8 @@ proc ::kbs::build::Configure-Config {path args} {
   }
 
   #TODO CFLAGS
-  Run env CC=[Get CC] TCLSH_PROG=[Get builddir-sys]/bin/tclsh85 WISH_PROG=[Get builddir-sys]/bin/wish $path/configure {*}$myOpts {*}$args
+  # Run env CC=[Get CC] TCLSH_PROG=[Get builddir-sys]/bin/tclsh85 WISH_PROG=[Get builddir-sys]/bin/wish $path/configure {*}$myOpts {*}$args
+  Run env CC=[Get CC] $path/configure {*}$myOpts {*}$args
 }
 
 #-------------------------------------------------------------------------------
