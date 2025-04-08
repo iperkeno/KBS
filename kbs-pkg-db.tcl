@@ -310,11 +310,7 @@ Package kbskit8.6 {
   }
   Source {Link kbskit0.4}
   Configure {  
-    # Patch [Get srcdir-sys]/win/Makefile.in 171 \
-    #   {COMPILE		= $(CC) $(DEFS) -DTCL_BROKEN_MAINARGS $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)} \
-    #   {COMPILE		= $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)}
-    #
-    Config [Get srcdir-sys] ;#--enable-thread --disable-shared ;#--with-tcl=[Get builddir-sys]/lib --disable-stubs 
+    Config [Get srcdir-sys] --enable-thread --disable-shared ;#--with-tcl=[Get builddir-sys]/lib --disable-stubs 
   }
   Make {
     set MYMK "[Get builddir-sys]/lib/Mk4tcl2.4.9.7/libMk4tcl2.4.9.7.a "
@@ -322,46 +318,47 @@ Package kbskit8.6 {
     if {[Get target-sys]  == "win"} {
       if {[Get staticstdcpp]} {
         append MYMK " [Get builddir-sys]/lib/libtclstub86s.a "
-        # append MYMK " -L[Get builddir-sys]/bin"
-        append MYMK " -L[Get builddir-sys]/lib"
-        # append MYMK " -optl-static -static -static-libgcc -static-libstdc++ -lstdc++"
-        append MYMK " -static"
-        append MYMK " -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lm"
+        append MYMK " -static -lpthread -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ "
       } else {
         append MYMK " [Get builddir-sys]/lib/libtclstub86s.a -lstdc++"
+        append MYMK " -Wl,-Bdynamic -lm"
+      }
+    } elseif {[Get target-sys]  == "unix"} {
+      if {[Get staticstdcpp]} {
+        append MYMK " [Get builddir-sys]/lib/libtclstub8.6.a "
+        append MYMK " -lstdc++"
+        #append MYMK " -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lm"
+      }  else  {
+        append MYMK " -lstdc++"
       }
     } elseif {$::tcl_platform(os) == "Darwin"} {
       append MYMK " -lstdc++ -framework CoreFoundation "
     } elseif {$::tcl_platform(os) == "SunOS" && [Get CC] == "cc"} {
       append MYMK " -lCstd -lCrun "
-    } elseif {[Get staticstdcpp]} {
-      append MYMK " -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lm"
-      append MYMK " -optl-static -static-libgcc -lstdc++ "
-    }  else  {
-      append MYMK " -lstdc++"
-    }
+    } 
 
     if {[Get target-sys]  == "win"} {
       set    MYCLI " [Get builddir-sys]/lib/libtcl86s.a"
-      # append MYCLI " [Get builddir-sys]/bin/tcl86.dll" 
+      append MYCLI " [Get builddir-sys]/bin/tcl86.dll"
       # append MYCLI " [Get builddir-sys]/bin/zlib1.dll"
-      # append MYCLI " [Get builddir-sys]/bin/libstdc++-6.dll"
       append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs142.a"
       set    MYGUI " [Get builddir-sys]/lib/libtk86.a"
       set    MYVQ  " [Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a "
       set    MYEMU " wine"
-    } else {
-      set    MYCLI " [Get builddir-sys]/lib/libtcl8.6.a"
+    } elseif {[Get target-sys]  == "unix"} {
+      append    MYCLI " [Get builddir-sys]/lib/libtcl8.6.a"
       append MYCLI " [Get builddir-sys]/lib/vfs1.4.2/libvfs1.4.2.a"
       set    MYGUI " [Get builddir-sys]/lib/libtk8.6.a"
       set    MYVQ  " [Get builddir-sys]/lib/vqtcl4.1/libvqtcl4.1.a [Get builddir-sys]/lib/libtclstub8.6.a"
+      set    MYEMU ""
     }
+
     if {[Get -threads] in {--enable-threads --enable-threads=yes {}}} {
-      set    MYKITVQ  " itcl4.2.4 thread2.8.9" 
-      set    MYKITMK  " itcl4.2.4 thread2.8.9"
+      set    MYKITVQ  " itcl4.2.4 thread2.8.9"
+      set    MYKITMK  " itcl4.2.4 thread2.8.9" 
     } else {
-      set    MYKITVQ " itcl4.2.4 " 
-      set    MYKITMK " itcl4.2.4 " 
+      set    MYKITVQ  " itcl4.2.4" 
+      set    MYKITMK  " itcl4.2.4" 
     }
     foreach my [Get kit] {
       Run make clean
@@ -416,17 +413,17 @@ Package mk4tcl2.4.9.7 {
 Package mk4tcl2.4.9.7-static {
   Source {Link mk4tcl2.4.9.7}
   Configure {
-    Patch [Get srcdir]/unix/Makefile.in 46 {CXXFLAGS = $(CXX_FLAGS)} {CXXFLAGS = -DSTATIC_BUILD $(CXX_FLAGS)}
+
     if {$::tcl_platform(os) == "SunOS" && [Get CC] == "cc"} {
       Patch [Get srcdir]/tcl/mk4tcl.h 9 "#include <tcl.h>\n\n" "#include <tcl.h>\n#undef TCL_WIDE_INT_TYPE\n"
     }
     
-    Patch [Get srcdir]/tcl/mk4tcl.cpp 1967 \
-    "          tcl_ListObjAppendElement(r, Tcl_NewLongObj((long)a->GetAt(i)));" \
-    "          tcl_ListObjAppendElement(r, Tcl_NewLongObj((long long)a->GetAt(i)));"
-    
-    
-    Config [Get srcdir-sys]/tcl  --disable-shared ;#--with-tcl=[Get builddir-sys]/include
+    if {[Get target-sys]  == "unix"} {
+      Config [Get srcdir-sys]/tcl --disable-shared ;#-with-tcl=[Get builddir-sys]/include
+    } elseif {[Get target-sys]  == "win"} {
+      Config [Get srcdir-sys]/tcl  --disable-shared ;#--with-tcl=[Get builddir-sys]/lib
+    }
+
     # Config [Get srcdir-sys]/tcl   --with-tcl=[Get builddir-sys]/lib
   }
   Make {Run make }
@@ -620,7 +617,7 @@ Package tcl8.6-static {
 #@verbatim
 Package tcllib1.21 {
   Source {Wget http://prdownloads.sourceforge.net/tcllib/tcllib-1.21.tar.gz}
-  Configure {Config [Get srcdir-sys]}
+  Configure {Config [Get srcdir-sys] ac_cv_path_wish=/usr/bin/tclsh8.6 ac_cv_path_tclsh=/usr/bin/tclsh8.6}
   Make {}
   Install {Run make install-libraries}
   Clean {Run make clean}
@@ -817,7 +814,7 @@ Package tkdnd2.8 {
 #TODO  Source {Wget https://github.com/tcltk/tklib/archive/841659f114803b4c9dc186704af6a7f64515c45c.zip}
 Package tklib0.6 {
   Source {Wget https://core.tcl.tk/tklib/tarball/tklib-0.6.tar.gz?uuid=tklib-0-6}
-  Configure {Config [Get srcdir-sys]}
+  Configure {Config [Get srcdir-sys] ac_cv_path_wish=/usr/bin/tclsh8.6 ac_cv_path_tclsh=/usr/bin/tclsh8.6  }
   Make {}
   Install {Run make install-libraries}
   Clean {Run make clean}
@@ -924,6 +921,20 @@ Package trofs0.4.9 {
   Install {Run make install-binaries}
   Clean {Run make clean}
 }
+##==============================================================================
+# github: https://github.com/apnadkarni/twapi/releases/tag/v5.0.2
+# sourceforge: https://sourceforge.net/projects/twapi/files/Current%20Releases/Tcl%20Windows%20API/twapi-5.0.2/twapi-5.0.2.zip/download
+## TWAPI
+Package twapi5.0.2 {
+  Source {Wget https://github.com/apnadkarni/twapi/archive/refs/tags/v5.0.2.tar.gz}
+  Configure { Config [Get srcdir-sys]  --enable-threads --enable-64bit --with-tcl=[Get builddir-sys]/tcl8.6 }
+  Make { Run make }
+  Install { Run make install }
+  Clean {  }
+}
+
+
+
 #@endverbatim
 ## @defgroup udp
 #@verbatim
