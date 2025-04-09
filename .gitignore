@@ -9,3 +9,5 @@ sources/*
 doc
 
 kbs-auricous.tcl
+
+STARKIT_KITGEN_EV.code-workspace
